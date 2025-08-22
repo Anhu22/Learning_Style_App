@@ -18,7 +18,9 @@ import SearchPage_V from "./SearchPage_V";
 import SearchPage_R from "./SearchPage_R";
 import RecommendationPage_V from "./RecommandPage_V";
 import RecommendationPage_R from "./RecommandPage_R";
-import Kinesthetic from "./Kinesthetic";
+import Kinesthetic1 from "./Kinesthetic1";
+import Kinesthetic2 from "./kinesthetic2";
+import Kinesthetic_Quiz1 from "./Kinesthetic_Quiz1";
 import Audio from "./Audio";
 import A_Quiz from "./Audio_Quiz";
 import { ScoreProvider } from "./ScoreProvider";
@@ -40,7 +42,9 @@ function App() {
           <Route path="/vquiz1" element={<Visual_Quiz1 />} />
           <Route path="/visual2" element={<Visual2 />} />
           <Route path="/vquiz2" element={<Visual_Quiz2 />} />
-          <Route path="/kinesthetic" element={<Kinesthetic />}/>
+          <Route path="/kinesthetic1" element={<Kinesthetic1/>} />
+          <Route path="/kinesthetic2" element={<Kinesthetic2/>} />
+          <Route path="/kinesthetic_quiz1" element={<Kinesthetic_Quiz1 />}/>
           <Route path="/audio" element={<Audio />}/>
           <Route path="/a_quiz" element={<A_Quiz />}/>
           <Route path="/result" element={<Result />} />
