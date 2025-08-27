@@ -47,18 +47,24 @@ const Home = () => {
   return (
     <Wrapper>
       <Title>
-        <h1>Welcome to the Solar System!</h1>
+        <h1>📘 Learn Fractions in Real Life!</h1>
+        <p>Watch this video to understand fractions with fun examples.</p>
       </Title>
 
       <VideoContainer>
-        <video width="560" height="315" controls>
-          <source src="\video\Audio.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <iframe
+          width="560"
+          height="315"
+          src="https://www.youtube.com/embed/m9lcW6XdYV8?start=97"
+          title="Fractions in Real Life for Kids"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
       </VideoContainer>
 
       <ButtonContainer>
-        <Link to="/a_quiz">
+        <Link to="/vquiz3">
           <Button>Start the Quiz</Button>
         </Link>
       </ButtonContainer>

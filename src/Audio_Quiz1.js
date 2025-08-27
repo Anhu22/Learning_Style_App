@@ -16,6 +16,12 @@ const Title = styled.div`
 
 const QuestionContainer = styled.div`
   margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.3); /* semi-transparent white */
+  border-radius: 12px;
+  backdrop-filter: blur(8px); /* frosted glass effect */
+  -webkit-backdrop-filter: blur(8px); /* for Safari */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
 
 const Question = styled.p`
@@ -73,7 +79,7 @@ const Quiz = () => {
     setScore(calculatedScore);
     setSubmitted(true);
 
-    localStorage.setItem("audioQuizScore", calculatedScore);
+    localStorage.setItem("audioQuizScore1", calculatedScore);
   };
 
   const questions = [
@@ -135,8 +141,8 @@ const Quiz = () => {
       {submitted && (
         <div>
           <br />
-          <SubmitButton onClick={() => navigate("/result")}>
-            End the Quiz
+          <SubmitButton onClick={() => navigate("/audio2")}>
+            Proceed to Next
           </SubmitButton>
         </div>
       )}

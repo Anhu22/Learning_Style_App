@@ -2,382 +2,493 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-const PageBackground = styled.div`
-  background-color: #e0f7fa;
-  min-height: 100vh;
-  padding: 10px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Container = styled.div`
-  margin: 10px;
-  padding: 150px;
-  max-width: 50vh;
-  border-radius: 15px;
-  background: linear-gradient(135deg, rgb(166, 243, 243), rgb(244, 180, 250));
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-`;
-
-const PizzaContainer = styled.div`
-  margin: 30px auto;
-  padding: 30px;
-  max-width: 700px;
-  border-radius: 15px;
-  background: linear-gradient(135deg, rgb(166, 243, 243), rgb(244, 180, 250));
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-`;
-
-const Title = styled.h2`
-  text-align: center;
-  font-size: 26px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
-`;
-
-const Text = styled.p`
-  text-align: center;
-  font-size: 20px;
-  margin-bottom: 30px;
-`;
-
-const Instruction = styled.p`
-  text-align: center;
-  font-size: 18px;
-  margin-bottom: 30px;
-  white-space: pre-line;
-`;
-
-const PizzaBox = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 220px;
-  height: 220px;
-  margin: 0 auto 20px auto;
-  background-color: #fff3e0;
-  border: 3px dashed #ff9800;
-  border-radius: 12px;
-  padding: 10px;
-`;
-
-const Slice = styled.div`
-  width: 80px;
-  height: 80px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 20px;
-`;
-
-const ActionButton = styled.button`
-  padding: 10px 20px;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const Button = styled(ActionButton)`
-  background-color: #4caf50;
-  &:hover {
-    background-color: #45a049;
-  }
-`;
-
-const AddButton = styled(ActionButton)`
-  background-color: #4caf50;
-  &:hover {
-    background-color: #43a047;
-  }
-`;
-
-const RemoveButton = styled(ActionButton)`
-  background-color: #f44336;
-  &:hover {
-    background-color: #d32f2f;
-  }
-`;
-
-const SubmitButton = styled(ActionButton)`
-  background-color: #ff7f50;
-  &:hover {
-    background-color: #e96b3a;
-  }
-`;
-
-const NextButton = styled(ActionButton)`
-  background-color: #2196f3;
-  &:hover {
-    background-color: #1976d2;
-  }
-`;
-
-const TryAgainButton = styled(ActionButton)`
-  background-color: #9c27b0;
-  &:hover {
-    background-color: #7b1fa2;
-  }
-`;
-
-const Feedback = styled.p`
-  text-align: center;
-  font-size: 18px;
-  margin-top: 15px;
-  font-weight: bold;
-  color: ${(props) => (props.correct ? "green" : "red")};
-`;
-
-const PizzaFractionGame = () => {
-  const [slices, setSlices] = useState([]);
-  const [feedback, setFeedback] = useState("");
-  const [isCorrect, setIsCorrect] = useState(null);
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [quizEnded, setQuizEnded] = useState(false);
-  const [showGame, setShowGame] = useState(false);
-  const navigate = useNavigate();
-
-  const questions = [
-  {
-    title: "🍕 Represent a Full Pizza!",
-    instruction:
-      "A pizza can be divided into 4 equal slices.\n" +
-      "👉 A full pizza means all 4 slices are present.\n\n" +
-      "Task:\nStep 1: Click on the Vegetable Pizza Slice button four times to make a full pizza.",
-    correct: 4,
-    requiredImage:
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png",
+// ------------------ Config ------------------
+const BODIES = [
+  { 
+    id: "sun", 
+    name: "Sun", 
+    hint: "I'm a big burning star at the center! ☀️",
+    fact: "The Sun is a star at the center of our solar system. It's about 4.6 billion years old and makes up 99.86% of the solar system's mass!"
   },
-  {
-    title: "🍕 Represent 1/4 of a Pizza!",
-    instruction:
-      "Fractions represent parts of a whole. Here, the whole pizza is cut into 4 equal slices.\n" +
-      "👉 1/4 means one out of four slices are chosen.\n\n" +
-      "Task:\nStep 1: Click on the Pepperoni Pizza Slice button one times to make 1/4 of a pizza.",
-    correct: 1,
-    requiredImage:
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png",
+  { 
+    id: "mercury", 
+    name: "Mercury", 
+    hint: "I'm the closest planet to the Sun! 🔥",
+    fact: "Mercury is the smallest planet and closest to the Sun. It has no atmosphere and temperatures range from -173°C to 427°C!"
   },
-  {
-  title: "🍕 Represent 1/2 of a Pizza!",
-  instruction:
-    "Fractions show equal parts of a whole. A whole pizza has 4 slices.\n" +
-    "👉 Taking 2 out of 4 slices means 1/2 of the pizza.\n\n" +
-    "Task:\nStep 1: Click on the Vegetable Pizza Slice button two times.",
-  correct: 2,
-  requiredImage:
-    "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png",
-},
-{
-    title: "🍕 Represent 3/4 of a Pizza!",
-    instruction:
-      "Fractions represent parts of a whole. Here, the whole pizza is cut into 4 equal slices.\n" +
-      "👉 3/4 means three out of four slices are chosen.\n\n" +
-      "Task:\nStep 1: Click on the Pepperoni Pizza Slice button three times to make 3/4 of a pizza.",
-    correct: 3,
-    requiredImage:
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png",
+  { 
+    id: "venus", 
+    name: "Venus", 
+    hint: "I'm the hottest planet! 🌋",
+    fact: "Venus is the hottest planet with surface temperatures of 465°C. It has a thick atmosphere of carbon dioxide and sulfuric acid clouds!"
   },
-  {
-    title: "🍕 Fulfill a Customer's Order!",
-    instruction:
-      "Sometimes fractions are mixed with different toppings.\n" +
-      "👉 Here, the customer wants:\n  - 1/4 of the pizza as Vegetable\n  - 3/4 of the pizza as Pepperoni\n\n" +
-      "Task:\nStep 1: Click the Vegetable Pizza Slice button once.\nStep 2: Click the Pepperoni Pizza Slice button three times.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 1,
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png":
-        3,
-    },
+  { 
+    id: "earth", 
+    name: "Earth", 
+    hint: "I'm where YOU live! 🌍",
+    fact: "Earth is the only known planet with life! It has liquid water, a protective atmosphere, and takes 365.25 days to orbit the Sun!"
+  },
+  { 
+    id: "mars", 
+    name: "Mars", 
+    hint: "I'm red and dusty! 🔴",
+    fact: "Mars is known as the Red Planet due to iron oxide (rust) on its surface. It has the largest volcano in the solar system - Olympus Mons!"
+  },
+  { 
+    id: "jupiter", 
+    name: "Jupiter", 
+    hint: "I'm the biggest planet! 🌪️",
+    fact: "Jupiter is the largest planet - you could fit 1,300 Earths inside it! It has a Great Red Spot, a giant storm that's been raging for centuries!"
+  },
+  { 
+    id: "saturn", 
+    name: "Saturn", 
+    hint: "I have shiny rings! 💍",
+    fact: "Saturn is famous for its spectacular ring system made of ice particles and rock. It's the least dense planet - it would float in water!"
+  },
+  { 
+    id: "uranus", 
+    name: "Uranus", 
+    hint: "I roll on my side! 🤸",
+    fact: "Uranus is tilted on its side at 98 degrees! It has a blue-green color from methane gas and was the first planet discovered with a telescope!"
+  },
+  { 
+    id: "neptune", 
+    name: "Neptune", 
+    hint: "I'm deep blue and windy! 💨",
+    fact: "Neptune has the strongest winds in the solar system - up to 2,100 km/h! It was the first planet located through mathematical calculations!"
   },
 ];
 
+// ------------------ Styled Components ------------------
+const AppWrap = styled.div`
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1e3c72, #2a5298);
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+`;
 
-  const sliceImages = [
-    "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png",
-    "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png",
-  ];
+const MainContent = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
-  const currentQuestion = questions[questionIndex];
+const FactsPanel = styled.div`
+  width: 300px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  margin-right: 20px;
+  backdrop-filter: blur(10px);
+  max-height: 80vh;
+  overflow-y: auto;
+`;
 
-  const handleAddSlice = (type) => {
-    if (slices.length < 4) {
-      setSlices([...slices, sliceImages[type]]);
-    }
-  };
+const FactsTitle = styled.h3`
+  color: #ffd166;
+  text-align: center;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #ffd166;
+  padding-bottom: 8px;
+`;
 
-  const handleRemoveSlice = () => {
-    if (slices.length > 0) {
-      setSlices(slices.slice(0, -1));
-    }
-  };
+const FactItem = styled.div`
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-left: 4px solid ${props => props.color || '#ffd166'};
+  
+  h4 {
+    margin: 0 0 8px 0;
+    color: ${props => props.color || '#ffd166'};
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+`;
 
-  const handleSubmit = () => {
-    let message = "";
-    let correct = false;
+const Title = styled.h1`
+  font-size: 30px;
+  color: #ffd166;
+  text-shadow: 2px 2px 6px #000;
+`;
 
-    if (currentQuestion.requiredImage) {
-      const correctCount = slices.length === currentQuestion.correct;
-      const allImagesCorrect = slices.every(
-        (img) => img === currentQuestion.requiredImage
-      );
+const Subtitle = styled.h2`
+  font-size: 20px;
+  color: #a8dadc;
+  margin-bottom: 20px;
+  text-align: center;
+`;
 
-      if (correctCount && allImagesCorrect) {
-        message = "✅ Correct! Great job!";
-        correct = true;
-      } else {
-        if (!correctCount && allImagesCorrect) {
-          message = `❌ You added ${slices.length} slices, but you need ${currentQuestion.correct}.`;
-        } else if (correctCount && !allImagesCorrect) {
-          message = `❌ You used the wrong type of slice.`;
-        } else {
-          message = `❌ You added ${slices.length} slices and some were the wrong type.`;
-        }
-      }
-    } else if (currentQuestion.correctSlices) {
-      const counts = slices.reduce((acc, img) => {
-        acc[img] = (acc[img] || 0) + 1;
-        return acc;
-      }, {});
+const BodyContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 20px;
+  justify-content: center;
+`;
 
-      const isCorrect = Object.entries(currentQuestion.correctSlices).every(
-        ([img, count]) => counts[img] === count
-      );
+const PlanetCard = styled.div`
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: ${(props) => props.bg};
+  box-shadow: inset -6px -6px 12px rgba(0,0,0,0.4),
+              inset 6px 6px 12px rgba(255,255,255,0.2),
+              0px 0px 20px ${(props) => props.glow};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.2s;
 
-      if (isCorrect) {
-        message = "✅ Correct! You matched the order perfectly!";
-        correct = true;
-      } else {
-        let details = [];
-        for (const [img, requiredCount] of Object.entries(
-          currentQuestion.correctSlices
-        )) {
-          const given = counts[img] || 0;
-          if (given !== requiredCount) {
-            details.push(
-              `Needed ${requiredCount}, but you gave ${given} of ${
-                img.includes("pepperoni") ? "Pepperoni" : "Vegetable"
-              }`
-            );
-          }
-        }
-        message = "❌ Incorrect. " + details.join("; ");
-      }
-    }
+  &:hover {
+    transform: scale(1.15);
+  }
+`;
 
-    setIsCorrect(correct);
-    setFeedback(message);
-  };
+const AnswerBox = styled.div`
+  width: 320px;
+  min-height: 120px;
+  border: 3px dashed #ffb703;
+  border-radius: 16px;
+  background: #fffbea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px;
+  font-size: 18px;
+  text-align: center;
+  padding: 10px;
+  color: #000;
+`;
 
-  const handleNext = () => {
-    if (questionIndex < questions.length - 1) {
-      setQuestionIndex(questionIndex + 1);
-      setSlices([]);
-      setFeedback("");
-      setIsCorrect(null);
+const Button = styled.button`
+  background: #ffd166;
+  border: none;
+  color: #000;
+  font-weight: bold;
+  padding: 10px 22px;
+  border-radius: 14px;
+  cursor: pointer;
+  margin: 10px;
+  font-size: 16px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+
+  &:hover {
+    background: #ffb703;
+  }
+`;
+
+const ScoreDisplay = styled.div`
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px 0;
+  text-align: center;
+`;
+
+const TutorialOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+const TutorialPopup = styled.div`
+  background: linear-gradient(135deg, #2a5298, #1e3c72);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 500px;
+  text-align: center;
+  border: 3px solid #ffd166;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+`;
+
+const TutorialText = styled.p`
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  color: #fff;
+`;
+
+const TutorialButton = styled(Button)`
+  background: #ff6b6b;
+  font-size: 18px;
+  padding: 12px 30px;
+  
+  &:hover {
+    background: #ff5252;
+  }
+`;
+
+// Colors + glow for planets & Sun
+const bodyStyles = {
+  sun: { bg: "radial-gradient(circle, #ffdd00, #ff8800)", glow: "#ffdd00", color: "#ffdd00" },
+  mercury: { bg: "radial-gradient(circle, #b3b3b3, #6e6e6e)", glow: "#cfcfcf", color: "#cfcfcf" },
+  venus: { bg: "radial-gradient(circle, #f4a261, #b3541e)", glow: "#f4a261", color: "#f4a261" },
+  earth: { bg: "radial-gradient(circle, #2a9d8f, #264653)", glow: "#2a9d8f", color: "#2a9d8f" },
+  mars: { bg: "radial-gradient(circle, #e63946, #6d1b22)", glow: "#e63946", color: "#e63946" },
+  jupiter: { bg: "radial-gradient(circle, #f77f00, #9d4d00)", glow: "#f77f00", color: "#f77f00" },
+  saturn: { bg: "radial-gradient(circle, #ffba08, #9a6c00)", glow: "#ffba08", color: "#ffba08" },
+  uranus: { bg: "radial-gradient(circle, #48cae4, #0077b6)", glow: "#48cae4", color: "#48cae4" },
+  neptune: { bg: "radial-gradient(circle, #4361ee, #1a237e)", glow: "#4361ee", color: "#4361ee" },
+};
+
+// Tutorial steps
+const TUTORIAL_STEPS = [
+  {
+    id: 1,
+    text: "Welcome to Space Explorer Practice! 🌟 On the left, you'll find interesting facts about each celestial body in our solar system.",
+    target: null
+  },
+  {
+    id: 2,
+    text: "Click the 'Start Practice' button to begin your first mission. You'll need to drag the correct celestial body to the drop zone!",
+    target: "start-button"
+  },
+  {
+    id: 3,
+    text: "This is the drop zone! When you get a mission hint, drag the correct planet or sun here to complete the mission.",
+    target: "drop-zone"
+  },
+  {
+    id: 4,
+    text: "These are all the celestial bodies you can drag. Each has unique characteristics - use the hints to find the right one!",
+    target: "planets-container"
+  },
+  {
+    id: 5,
+    text: "The score display shows your progress and current score. You'll earn 2 points for each correct answer!",
+    target: "score-display"
+  },
+  {
+    id: 6,
+    text: "After completing all missions, you can take the quiz to test your knowledge or play again for more practice!",
+    target: "end-buttons"
+  }
+];
+
+// ------------------ Main Component ------------------
+const Kinesthetic2Enhanced = () => {
+  const [target, setTarget] = useState(null);
+  const [scores, setScores] = useState([]);
+  const [missionCount, setMissionCount] = useState(0);
+  const [showInstructions, setShowInstructions] = useState(true);
+  const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
+  const [showTutorial, setShowTutorial] = useState(true);
+  const navigate = useNavigate();
+  const TOTAL_MISSIONS = 5;
+
+  function nextMission() {
+    if (missionCount < TOTAL_MISSIONS) {
+      const pick = BODIES[Math.floor(Math.random() * BODIES.length)];
+      setTarget(pick);
+      setShowInstructions(false);
     } else {
-      setQuizEnded(true);
+      setTarget(null);
     }
-  };
+  }
 
-  const handleTryAgain = () => {
-    setSlices([]);
-    setFeedback("");
-    setIsCorrect(null);
-  };
+  function handleDrop(e) {
+    e.preventDefault();
+    const bodyId = e.dataTransfer.getData("body");
+    const body = BODIES.find((b) => b.id === bodyId);
+
+    if (!body || !target) return;
+
+    const isCorrect = body.id === target.id;
+    const points = isCorrect ? 2 : 0;
+
+    const missionNumber = missionCount + 1;
+    localStorage.setItem(`spaceExplorerScore_M${missionNumber}`, points);
+
+    setScores((prev) => [...prev, points]);
+    setMissionCount(missionNumber);
+
+    const totalScore = scores.reduce((sum, score) => sum + score, 0) + points;
+    localStorage.setItem("kinesthetictotalscore", totalScore);
+
+    if (missionNumber < TOTAL_MISSIONS) {
+      setTimeout(nextMission, 1000); // Brief pause before next mission
+    } else {
+      setTarget(null);
+    }
+  }
+
+  function resetGame() {
+    setTarget(null);
+    setScores([]);
+    setMissionCount(0);
+    setShowInstructions(true);
+    setShowTutorial(true);
+    setCurrentTutorialStep(0);
+  }
+
+  function nextTutorialStep() {
+    if (currentTutorialStep < TUTORIAL_STEPS.length - 1) {
+      setCurrentTutorialStep(prev => prev + 1);
+    } else {
+      setShowTutorial(false);
+    }
+  }
+
+  const currentScore = scores.reduce((sum, score) => sum + score, 0);
+  const maxScore = TOTAL_MISSIONS * 2;
 
   return (
-    <PageBackground>
-      {!showGame ? (
-        <Container>
-          <Title>WELCOME TO PIZZA MANIA 🍕</Title>
-          <Text>
-            You are working in a pizza restaurant.<br />
-            Practice your skills to get all the orders right
-          </Text>
-          <ButtonWrapper>
-            <Button onClick={() => setShowGame(true)}>Practice</Button>
-          </ButtonWrapper>
-        </Container>
-      ) : (
-        <PizzaContainer>
-          {!quizEnded ? (
-            <>
-              <Title>{currentQuestion.title}</Title>
-              <Instruction>{currentQuestion.instruction}</Instruction>
+    <AppWrap>
+      {/* Facts Panel on the left */}
+      <FactsPanel>
+        <FactsTitle>🌌 Solar System Facts</FactsTitle>
+        {BODIES.map((body) => (
+          <FactItem key={body.id} color={bodyStyles[body.id].color}>
+            <h4>{body.name}</h4>
+            <p>{body.fact}</p>
+          </FactItem>
+        ))}
+      </FactsPanel>
 
-              <ButtonRow>
-                <AddButton onClick={() => handleAddSlice(0)}>
-                  🍕 Vegetable Pizza Slice
-                </AddButton>
-                <AddButton onClick={() => handleAddSlice(1)}>
-                  🍕 Pepperoni Pizza Slice
-                </AddButton>
-                <RemoveButton onClick={handleRemoveSlice}>
-                  ➖ Remove Slice
-                </RemoveButton>
-              </ButtonRow>
+      <MainContent>
+        <Title>🌞🪐 Space Explorer Practice</Title>
+        <Subtitle>Drag and drop the correct celestial body to complete each mission!</Subtitle>
 
-              <PizzaBox>
-                {slices.map((src, idx) => (
-                  <Slice
-                    key={idx}
-                    style={{ backgroundImage: `url(${src})` }}
-                  />
-                ))}
-              </PizzaBox>
+        {showInstructions && (
+          <div style={{ 
+            background: 'rgba(255, 255, 255, 0.1)', 
+            padding: '20px', 
+            borderRadius: '10px', 
+            marginBottom: '20px',
+            textAlign: 'center'
+          }}>
+            <h3>How to Play:</h3>
+            <p>1. Click "Start Practice" to begin</p>
+            <p>2. Read the hint for each mission</p>
+            <p>3. Drag the correct celestial body to the drop zone</p>
+            <p>4. Complete all 5 missions to finish the practice</p>
+          </div>
+        )}
 
-              <SubmitButton onClick={handleSubmit}>✅ Submit Answer</SubmitButton>
+        {missionCount > 0 && (
+          <ScoreDisplay id="score-display">
+            <strong>Progress:</strong> Mission {missionCount} of {TOTAL_MISSIONS} | 
+            <strong> Score:</strong> {currentScore}/{maxScore}
+          </ScoreDisplay>
+        )}
 
-              {feedback && <Feedback correct={isCorrect}>{feedback}</Feedback>}
+        {missionCount < TOTAL_MISSIONS ? (
+          <Button 
+            onClick={nextMission} 
+            id="start-button"
+            style={currentTutorialStep === 1 ? { 
+              boxShadow: '0 0 20px #ffd166, 0 0 30px #ffd166',
+              transform: 'scale(1.1)',
+              transition: 'all 0.3s ease'
+            } : {}}
+          >
+            {missionCount === 0 ? "🚀 Start Practice" : "➡️ Next Mission"}
+          </Button>
+        ) : (
+          <div id="end-buttons">
+            <Button onClick={() => navigate("/kinesthetic_Quiz1")}>
+              Take the Quiz
+            </Button>
+            <Button onClick={resetGame} style={{ background: '#e63946' }}>
+              Play Again
+            </Button>
+          </div>
+        )}
 
-              {feedback && !isCorrect && (
-                <TryAgainButton onClick={handleTryAgain}>🔄 Try Again</TryAgainButton>
-              )}
+        {target && missionCount < TOTAL_MISSIONS && (
+          <p style={{ fontSize: "18px", marginTop: "10px" }}>
+            <strong>Mission {missionCount + 1}:</strong> {target.hint}
+          </p>
+        )}
 
-              {feedback && isCorrect && (
-                <NextButton onClick={handleNext}>
-                  {questionIndex < questions.length - 1
-                    ? "➡️ Next Question"
-                    : "End Quiz"}
-                </NextButton>
-              )}
-            </>
-          ) : (
-            <>
-              <Title>🎊 Practice Completed!</Title>
-              <Instruction>
-                Now You are ready to run the restaurant!
-                <br/>Have a Blast!!
-              </Instruction>
-              <ButtonRow>
-                <SubmitButton onClick={() => navigate("/kinesthetic_quiz1")}>
-                  Proceed to the Quiz
-                </SubmitButton>
-              </ButtonRow>
-            </>
-          )}
-        </PizzaContainer>
-      )}
-    </PageBackground>
+        {/* Answer Drop Box */}
+        {missionCount < TOTAL_MISSIONS && (
+          <AnswerBox
+            id="drop-zone"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleDrop}
+            style={currentTutorialStep === 2 ? { 
+              boxShadow: '0 0 20px #ffb703, 0 0 30px #ffb703',
+              border: '3px solid #ffd166',
+              transform: 'scale(1.05)',
+              transition: 'all 0.3s ease'
+            } : {}}
+          >
+            {target ? "👉 Drag the correct one here!" : "Press Start to begin 🚀"}
+          </AnswerBox>
+        )}
+
+        {/* Planets & Sun to Drag */}
+        {missionCount < TOTAL_MISSIONS && (
+          <BodyContainer 
+            id="planets-container"
+            style={currentTutorialStep === 3 ? { 
+              outline: '3px solid #ffd166',
+              borderRadius: '15px',
+              padding: '10px',
+              boxShadow: '0 0 20px rgba(255, 209, 102, 0.5)'
+            } : {}}
+          >
+            {BODIES.map((b) => (
+              <PlanetCard
+                key={b.id}
+                draggable
+                bg={bodyStyles[b.id].bg}
+                glow={bodyStyles[b.id].glow}
+                onDragStart={(e) => e.dataTransfer.setData("body", b.id)}
+              >
+                {b.name}
+              </PlanetCard>
+            ))}
+          </BodyContainer>
+        )}
+
+        {missionCount === TOTAL_MISSIONS && (
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
+            <h3 style={{ color: '#ffd166' }}>🎉 Practice Complete! 🎉</h3>
+            <p>You scored {currentScore} out of {maxScore} points!</p>
+            <p>Ready to test your knowledge in the quiz?</p>
+          </div>
+        )}
+
+        {/* Tutorial Popup */}
+        {showTutorial && (
+          <TutorialOverlay>
+            <TutorialPopup>
+              <TutorialText>
+                {TUTORIAL_STEPS[currentTutorialStep].text}
+              </TutorialText>
+              <TutorialButton onClick={nextTutorialStep}>
+                {currentTutorialStep === TUTORIAL_STEPS.length - 1 ? "Got it! Let's Start" : "Next"}
+              </TutorialButton>
+            </TutorialPopup>
+          </TutorialOverlay>
+        )}
+      </MainContent>
+    </AppWrap>
   );
 };
 
-export default PizzaFractionGame;
+export default Kinesthetic2Enhanced;

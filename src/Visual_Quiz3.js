@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Replace useHistory with useNavigate
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const QuizContainer = styled.div`
@@ -26,6 +25,7 @@ const QuestionContainer = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
 
+
 const Question = styled.p`
   font-size: 18px;
   font-weight: bold;
@@ -33,7 +33,7 @@ const Question = styled.p`
 
 const AnswerOption = styled.label`
   display: block;
-  margin-top: 8px;
+  margin-top: 10px;
   font-size: 16px;
   cursor: pointer;
 `;
@@ -73,82 +73,77 @@ const Quiz = () => {
     }
     let calculatedScore = 0;
 
-    // Calculate the score by checking the user's answers
+    // Calculate score
     questions.forEach((q, index) => {
       if (answers[index] === q.correctAnswer) {
-        calculatedScore += 1; // Add 1 for correct answer
+        calculatedScore += 1;
       }
     });
 
-    // Set the calculated score in the state
     setScore(calculatedScore);
     setSubmitted(true);
 
-    // After completing the read questionnaire and calculating the score
-    localStorage.setItem("readQuizScore1", calculatedScore);
+    // Save score in localStorage
+    localStorage.setItem("visualQuizScore3", calculatedScore);
   };
 
   const questions = [
     {
-      question: "1. What is the name of our planet?",
-      options: ["Earth", "Mars", "Venus", "Saturn"],
-      correctAnswer: "Earth",
+      question: "1. You baked a cake and cut it into 8 equal slices. If you ate 3 slices, what fraction of the cake did you eat?",
+      options: ["3/5", "3/8", "5/8", "1/2"],
+      correctAnswer: "3/8",
     },
     {
-      question: "2. Which planet is known as the 'Red Planet'?",
-      options: ["Earth", "Mars", "Jupiter", "Mercury"],
-      correctAnswer: "Mars",
+      question: "2. A class has 20 students. 5 of them are wearing glasses. What fraction of the students wear glasses?",
+      options: ["5/15", "5/20", "1/5", "1/4"],
+      correctAnswer: "1/4",
     },
     {
-      question: "3. What is the name of the star at the center of our solar system?",
-      options: ["The Moon", "The Sun", "The Earth", "The North Star"],
-      correctAnswer: "The Sun",
+      question: "3. You ran 6 kilometers out of your 10 km goal. What fraction of your goal have you completed?",
+      options: ["3/5", "2/5", "6/10", "1/2"],
+      correctAnswer: "3/5",
     },
     {
-      question: "4. Which planet is closest to the Sun?",
-      options: ["Mercury", "Earth", "Mars", "Saturn"],
-      correctAnswer: "Mercury",
+      question: "4. A pizza has 12 slices. If your friend eats 9 slices, what fraction of the pizza did they eat in simplest form?",
+      options: ["9/12", "3/4", "2/3", "1/2"],
+      correctAnswer: "3/4",
     },
     {
-      question: "5. What is the name of the natural satellite of earth?",
-      options: ["Saturn", "The Moon", "Venus", "Mars"],
-      correctAnswer: "The Moon",
+      question: "5. A fruit basket has 15 fruits: 6 apples, 5 oranges, and 4 bananas. What fraction of the fruits are apples?",
+      options: ["6/15", "2/5", "1/3", "Both 6/15 and 2/5"],
+      correctAnswer: "Both 6/15 and 2/5",
     },
   ];
 
   return (
     <QuizContainer>
-      <Title>
-        <h1>Solar System Quiz</h1>
-      </Title>
+      <Title><h1>🔢 Fractions Quiz</h1></Title>
 
-      <div>
-        {questions.map((q, index) => (
-          <QuestionContainer key={index}>
-            <Question>{q.question}</Question>
-            {q.options.map((option, i) => (
-              <AnswerOption key={i}>
-                <input
-                  type="radio"
-                  name={`question${index}`}
-                  value={option}
-                  checked={answers[index] === option}
-                  onChange={(e) => handleChange(e, index)}
-                />
-                {option}
-              </AnswerOption>
-            ))}
-          </QuestionContainer>
-        ))}
+      {questions.map((q, index) => (
+        <QuestionContainer key={index}>
+          <Question>{q.question}</Question>
+          {q.options.map((option, i) => (
+            <AnswerOption key={i}>
+              <input
+                type="radio"
+                name={`question${index}`}
+                value={option}
+                checked={answers[index] === option}
+                onChange={(e) => handleChange(e, index)}
+              />
+              {" "}{option}
+            </AnswerOption>
+          ))}
+        </QuestionContainer>
+      ))}
 
-        <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
-      </div>
+      <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
       <br></br>
       {submitted && (
         <div>
           <SubmitButton
             onClick={() => {
-              navigate("/readwrite2");
+              navigate("/kinesthetic1");
             }}
           >
             Proceed to Next

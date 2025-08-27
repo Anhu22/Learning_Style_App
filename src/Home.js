@@ -37,7 +37,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleStart = () => {
-    const quizzes = ["/readwrite1", "/readwrite2","/readwrite3"];
+    const quizzes = ["/readwrite1"];
     const randomQuiz = quizzes[Math.floor(Math.random() * quizzes.length)];
     navigate(randomQuiz);
   };

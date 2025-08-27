@@ -42,52 +42,88 @@ const Button = styled.button`
   }
 `;
 
-const Home = () => {
+const ReadWrite3 = () => {
   return (
     <Wrapper>
       <Title>
         <h1>Welcome to Learning Fractions!</h1>
       </Title>
       <HomeContainer>
-        {/* Fractions Section */}
-        <h2>Understanding Fractions</h2>
+       <h2>What Are Fractions?</h2>
+<p>A fraction shows a part of a whole. It has two numbers:
+
+Numerator – the top number, which tells how many parts you have.
+
+Denominator – the bottom number, which tells how many equal parts the whole is divided into.
+
+Example:
+If a pizza is cut into 4 equal slices and you eat 1 slice:
+
+Numerator = 1 (the slice you ate)
+
+Denominator = 4 (total slices)
+
+Fraction = 1/4
+
+Fractions are used in daily life whenever we divide something into parts, like sharing food, measuring ingredients, or tracking progress.</p>
+        <h2>Applying Fractions in Real Life</h2>
         <p>
-          A <strong>fraction</strong> is a way to represent a part of a whole. It is written as
-          <em> a / b</em>, where:
-        </p>
-        <ul>
-          <li><strong>a</strong> is the numerator (the number of parts you have)</li>
-          <li><strong>b</strong> is the denominator (the total number of parts)</li>
-        </ul>
-
-        <p><strong>Examples:</strong></p>
-        <ul>
-          <li><strong>1/2</strong> means one part out of two equal parts.</li>
-          <li><strong>3/4</strong> means three parts out of four equal parts.</li>
-          <li><strong>5/8</strong> means five parts out of eight equal parts.</li>
-        </ul>
-
-        <p>Here are more examples:</p>
-        <ul>
-          <li><strong>2/5</strong> means two parts out of five equal parts. Imagine splitting a cake into 5 pieces, and you take 2 of them.</li>
-          <li><strong>7/10</strong> means seven parts out of ten equal parts. If a chocolate bar is divided into 10 pieces and you eat 7, you have eaten 7/10 of it.</li>
-          <li><strong>9/12</strong> can be simplified to 3/4. This means nine parts out of twelve equal parts, which is the same as three parts out of four.</li>
-          <li><strong>1/3</strong> means one part out of three equal parts. Think of cutting a pizza into 3 slices, and you eat one of them.</li>
-          <li><strong>11/15</strong> means eleven parts out of fifteen equal parts. If you have a pizza sliced into 15 slices and you eat 11, you’ve eaten 11/15.</li>
-        </ul>
-
-        <p><strong>Different Types of Fractions:</strong></p>
-        <ul>
-          <li><strong>Proper Fractions:</strong> The numerator is smaller than the denominator (e.g., 2/5, 3/4).</li>
-          <li><strong>Improper Fractions:</strong> The numerator is greater than or equal to the denominator (e.g., 7/4, 11/8).</li>
-          <li><strong>Mixed Numbers:</strong> A whole number and a proper fraction together (e.g., 1 1/2, 2 3/4).</li>
-        </ul>
-
-        <p>
-          Fractions are useful in everyday life. For example, when measuring ingredients for a recipe, dividing something into equal parts, or even calculating time.
+          Now that you understand what fractions are, let’s <strong>apply</strong> them to
+          solve real-world problems.
         </p>
 
-        <p><strong>Fun Tip:</strong> Fractions can be converted into decimals and percentages. For example, 1/2 is equivalent to 0.5 or 50%!</p>
+        <p><strong>Example 1:</strong></p>
+        <ul>
+          <li>
+            You baked a cake and cut it into 8 equal slices. If you ate 3 slices, what fraction of the cake did you eat? 
+            <br /><br />
+            <em>Step 1:</em> Total slices = 8 → denominator. <br />
+            <em>Step 2:</em> Slices you ate = 3 → numerator. <br />
+            <em>Step 3:</em> Fraction = 3/8. <br />
+            ✅ So, you ate <strong>3/8 of the cake</strong>.
+          </li>
+        </ul>
+
+        <p><strong>Example 2:</strong></p>
+        <ul>
+          <li>
+            A class has 20 students. 5 of them are wearing glasses. What fraction of the students wear glasses? 
+            <br /><br />
+            <em>Step 1:</em> Total students = 20 → denominator. <br />
+            <em>Step 2:</em> Students with glasses = 5 → numerator. <br />
+            <em>Step 3:</em> Fraction = 5/20. <br />
+            <em>Step 4:</em> Simplify → divide numerator and denominator by 5 → 1/4. <br />
+            ✅ So, <strong>1/4 of the class</strong> wears glasses.
+          </li>
+        </ul>
+
+        <p><strong>Example 3:</strong></p>
+        <ul>
+          <li>
+            You ran 6 kilometers out of your 10 km goal. What fraction of your goal have you completed? 
+            <br /><br />
+            <em>Step 1:</em> Total distance = 10 → denominator. <br />
+            <em>Step 2:</em> Distance run = 6 → numerator. <br />
+            <em>Step 3:</em> Fraction = 6/10. <br />
+            <em>Step 4:</em> Simplify → divide numerator and denominator by 2 → 3/5. <br />
+            ✅ So, you completed <strong>3/5 of your goal</strong>.
+          </li>
+        </ul>
+
+        <h3>Practice Questions:</h3>
+        <ol>
+          <li>If you drink 2 cups of water out of 5 in a day, what fraction have you drunk?</li>
+          <li>A pizza has 12 slices. If your friend eats 9 slices, what fraction of the pizza did they eat? Can you simplify it?</li>
+          <li>A fruit basket has 15 fruits: 6 apples, 5 oranges, and 4 bananas. Write the fraction of fruits that are apples.</li>
+        </ol>
+
+        <p><strong>Challenge Task:</strong>  
+          Imagine you are making lemonade. The recipe needs 3/4 cup of sugar. If you only have a 1/4 cup measuring spoon, how many times will you fill it to measure the sugar?  
+          <br /><br />
+          <em>Hint:</em> Each spoon is 1/4. Keep adding:  
+          1/4 + 1/4 + 1/4 = 3/4.  
+          ✅ So, you will need to fill the spoon <strong>3 times</strong>.
+        </p>
       </HomeContainer>
 
       <ButtonContainer>
@@ -99,4 +135,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default ReadWrite3;

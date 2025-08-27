@@ -27,10 +27,10 @@ const Result = () => {
   const navigate = useNavigate();
   const [learningStyle, setLearningStyle] = useState("");
   // Get all quiz scores from localStorage
-  const readScore = parseInt(localStorage.getItem("readQuizScore")) || 0;
-  const visualScore = parseInt(localStorage.getItem("visualQuizScore")) || 0;
-  const audioScore = parseInt(localStorage.getItem("audioQuizScore")) || 0;
-  const kinestheticScore = parseInt(localStorage.getItem("pizzaFractionTotalScore")) || 0;
+const readScore = (parseInt(localStorage.getItem("readQuizScore1")) || 0) + (parseInt(localStorage.getItem("readQuizScore2")) || 0) + (parseInt(localStorage.getItem("readQuizScore3")) || 0);
+const visualScore = (parseInt(localStorage.getItem("visualQuizScore1")) || 0) + (parseInt(localStorage.getItem("visualQuizScore2")) || 0) + (parseInt(localStorage.getItem("visualQuizScore3")) || 0);
+const audioScore = (parseInt(localStorage.getItem("audioQuizScore1")) || 0) + (parseInt(localStorage.getItem("audioQuizScore2")) || 0) + (parseInt(localStorage.getItem("audioQuizScore3")) || 0);
+const kinestheticScore = parseInt(localStorage.getItem("kinesthetictotalscore")) || 0;
 
   //const totalScore = readScore + visualScore + audioScore + kinestheticScore;
 

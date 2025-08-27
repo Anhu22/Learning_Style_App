@@ -5,7 +5,7 @@ import styled from "styled-components";
 const QuizContainer = styled.div`
   margin: 20px;
   padding: 20px;
-  background: linear-gradient(135deg, rgb(166, 243, 243), rgb(244, 180, 250));
+  background: linear-gradient(135deg, rgb(166, 243, 243), rgb(244, 180, 250)); 
   border-radius: 12px;
 `;
 
@@ -18,12 +18,13 @@ const Title = styled.div`
 const QuestionContainer = styled.div`
   margin-bottom: 20px;
   padding: 15px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.3); /* semi-transparent white */
   border-radius: 12px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px); /* frosted glass effect */
+  -webkit-backdrop-filter: blur(8px); /* for Safari */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
+
 
 const Question = styled.p`
   font-size: 18px;
@@ -59,41 +60,8 @@ const Quiz = () => {
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
-  const questions = [
-    {
-      question: "1. Which part of the plant makes food using sunlight?",
-      options: ["Root", "Stem", "Leaves", "Flower"],
-      correctAnswer: "Leaves",
-    },
-    {
-      question: "2. Which plant needs support to grow upright?",
-      options: ["Pumpkin", "Mango", "Money plant", "Mint"],
-      correctAnswer: "Money plant",
-    },
-    {
-      question: "3. What is the main job of roots?",
-      options: [
-        "Make seeds",
-        "Hold the plant and absorb water",
-        "Carry food",
-        "Make flowers",
-      ],
-      correctAnswer: "Hold the plant and absorb water",
-    },
-    {
-      question: "4. Small and soft plants, like mint or coriander, are called?",
-      options: ["Shrubs", "Herbs", "Trees", "Climbers"],
-      correctAnswer: "Herbs",
-    },
-    {
-      question: "5. Which part of the plant protects and carries the seeds?",
-      options: ["Stem", "Root", "Fruit", "Leaf"],
-      correctAnswer: "Fruit",
-    },
-  ];
-
   const handleChange = (e, index) => {
-    const newAnswers = [...answers];
+    let newAnswers = [...answers];
     newAnswers[index] = e.target.value;
     setAnswers(newAnswers);
   };
@@ -103,8 +71,8 @@ const Quiz = () => {
       alert("Please answer all questions before submitting the quiz.");
       return;
     }
-
     let calculatedScore = 0;
+
     questions.forEach((q, index) => {
       if (answers[index] === q.correctAnswer) {
         calculatedScore += 1;
@@ -113,14 +81,43 @@ const Quiz = () => {
 
     setScore(calculatedScore);
     setSubmitted(true);
-    localStorage.setItem("readQuizScore2", calculatedScore);
+
+    // Store score in localStorage for result page
+    localStorage.setItem("audioQuizScore3", calculatedScore);
   };
+
+  // ✅ Replaced with L3 real-world application questions
+  const questions = [
+    {
+      question: "1. You cut a pizza into 12 slices. You ate 4 slices. What fraction of the pizza did you eat?",
+      options: ["4/12 = 1/3", "4/8 = 1/2", "3/12 = 1/4", "8/12 = 2/3"],
+      correctAnswer: "4/12 = 1/3",
+    },
+    {
+      question: "2. A classroom has 30 students. 18 of them are boys. What fraction of the class are boys?",
+      options: ["18/30 = 3/5", "18/25", "12/30 = 2/5", "15/30 = 1/2"],
+      correctAnswer: "18/30 = 3/5",
+    },
+    {
+      question: "3. Ramesh ran 9 kilometers of his 12 km target. What fraction of his target has he completed?",
+      options: ["9/12 = 3/4", "9/15 = 3/5", "6/12 = 1/2", "12/9"],
+      correctAnswer: "9/12 = 3/4",
+    },
+    {
+      question: "4. A cake recipe needs 2/3 cup of sugar. You only have a 1/3 cup measuring spoon. How many times do you need to fill it?",
+      options: ["1 time", "2 times", "3 times", "4 times"],
+      correctAnswer: "2 times",
+    },
+    {
+      question: "5. A fruit basket has 20 fruits: 8 apples, 6 bananas, and 6 oranges. What fraction of the fruits are bananas?",
+      options: ["8/20 = 2/5", "6/20 = 3/10", "14/20 = 7/10", "6/14"],
+      correctAnswer: "6/20 = 3/10",
+    },
+  ];
 
   return (
     <QuizContainer>
-      <Title>
-        <h1>🌿 Plants Quiz</h1>
-      </Title>
+      <Title><h1>🔢 Fractions Quiz (Apply Level)</h1></Title>
 
       {questions.map((q, index) => (
         <QuestionContainer key={index}>
@@ -140,12 +137,11 @@ const Quiz = () => {
         </QuestionContainer>
       ))}
 
-      {!submitted ? (
-        <SubmitButton onClick={handleSubmit}>Submit Quiz</SubmitButton>
-      ) : (
+      {!submitted && <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>}
+      {submitted && (
         <div>
-          <SubmitButton onClick={() => navigate("/readwrite3")}>
-            Proceed to Next
+          <SubmitButton onClick={() => navigate("/result")}>
+            Get the Result
           </SubmitButton>
         </div>
       )}

@@ -6,6 +6,7 @@ const QuizContainer = styled.div`
   margin: 20px;
   padding: 20px;
   background: linear-gradient(135deg, rgb(166, 243, 243), rgb(244, 180, 250)); 
+  border-radius: 12px;
 `;
 
 const Title = styled.div`
@@ -16,7 +17,14 @@ const Title = styled.div`
 
 const QuestionContainer = styled.div`
   margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.3); /* semi-transparent white */
+  border-radius: 12px;
+  backdrop-filter: blur(8px); /* frosted glass effect */
+  -webkit-backdrop-filter: blur(8px); /* for Safari */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
+
 
 const Question = styled.p`
   font-size: 18px;
@@ -25,7 +33,7 @@ const Question = styled.p`
 
 const AnswerOption = styled.label`
   display: block;
-  margin-top: 10px;
+  margin-top: 8px;
   font-size: 16px;
   cursor: pointer;
 `;
@@ -38,6 +46,7 @@ const SubmitButton = styled.button`
   cursor: pointer;
   font-size: 16px;
   border-radius: 5px;
+  margin-top: 15px;
   transition: background-color 0.3s;
 
   &:hover {
@@ -64,52 +73,51 @@ const Quiz = () => {
     }
     let calculatedScore = 0;
 
-    // Calculate the score by checking the user's answers
     questions.forEach((q, index) => {
       if (answers[index] === q.correctAnswer) {
-        calculatedScore += 1; // Add 1 for correct answer
+        calculatedScore += 1;
       }
     });
 
-    // Set the calculated score in the state
     setScore(calculatedScore);
     setSubmitted(true);
 
-    // After completing the read questionnaire and calculating the score
-    localStorage.setItem("readQuizScore", calculatedScore); // Store the score in localStorage
+    // Store score in localStorage for result page
+    localStorage.setItem("readQuizScore3", calculatedScore);
   };
 
+  // ✅ Replaced with L3 real-world application questions
   const questions = [
     {
-      question: "1. What is the fraction that represents half?",
-      options: ["1/2", "1/3", "1/4", "2/3"],
-      correctAnswer: "1/2",
+      question: "1. You cut a pizza into 12 slices. You ate 4 slices. What fraction of the pizza did you eat?",
+      options: ["4/12 = 1/3", "4/8 = 1/2", "3/12 = 1/4", "8/12 = 2/3"],
+      correctAnswer: "4/12 = 1/3",
     },
     {
-      question: "2. Which of the following is an improper fraction?",
-      options: ["3/5", "7/4", "1/3", "2/8"],
-      correctAnswer: "7/4",
+      question: "2. A classroom has 30 students. 18 of them are boys. What fraction of the class are boys?",
+      options: ["18/30 = 3/5", "18/25", "12/30 = 2/5", "15/30 = 1/2"],
+      correctAnswer: "18/30 = 3/5",
     },
     {
-      question: "3. What is the simplified form of 6/8?",
-      options: ["2/3", "3/4", "1/2", "4/5"],
-      correctAnswer: "3/4",
+      question: "3. Ramesh ran 9 kilometers of his 12 km target. What fraction of his target has he completed?",
+      options: ["9/12 = 3/4", "9/15 = 3/5", "6/12 = 1/2", "12/9"],
+      correctAnswer: "9/12 = 3/4",
     },
     {
-      question: "4. What is the mixed number form of 5/2?",
-      options: ["2 1/2", "3 1/2", "1 1/2", "2 3/4"],
-      correctAnswer: "2 1/2",
+      question: "4. A cake recipe needs 2/3 cup of sugar. You only have a 1/3 cup measuring spoon. How many times do you need to fill it?",
+      options: ["1 time", "2 times", "3 times", "4 times"],
+      correctAnswer: "2 times",
     },
     {
-      question: "5. Which of the following fractions is equivalent to 1/2?",
-      options: ["2/3", "4/8", "5/6", "1/3"],
-      correctAnswer: "4/8",
+      question: "5. A fruit basket has 20 fruits: 8 apples, 6 bananas, and 6 oranges. What fraction of the fruits are bananas?",
+      options: ["8/20 = 2/5", "6/20 = 3/10", "14/20 = 7/10", "6/14"],
+      correctAnswer: "6/20 = 3/10",
     },
   ];
 
   return (
     <QuizContainer>
-      <Title><h1>🔢 Fractions Quiz</h1></Title>
+      <Title><h1>🔢 Fractions Quiz (Apply Level)</h1></Title>
 
       {questions.map((q, index) => (
         <QuestionContainer key={index}>
@@ -129,17 +137,11 @@ const Quiz = () => {
         </QuestionContainer>
       ))}
 
-      <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
+      {!submitted && <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>}
       {submitted && (
         <div>
-          <br></br>
-          <SubmitButton
-            onClick={() => {
-              // Redirect to the next page (Video Questionnaire) <h2>Your score: {score}/{questions.length}</h2>
-              navigate("/visual2");
-            }}
-          >
-            Proceed to Video Quiz
+          <SubmitButton onClick={() => navigate("/visual1")}>
+            Proceed to Next
           </SubmitButton>
         </div>
       )}

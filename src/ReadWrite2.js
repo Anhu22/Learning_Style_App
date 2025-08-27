@@ -45,39 +45,56 @@ const Home = () => {
   return (
     <Wrapper>
       <Title>
-        <h1>Let's Learn About Plants!</h1>
-      </Title>
-      <HomeContainer>
-      <h2>What Are Plants?</h2>
-          <p>
-           Plants are living things that grow in the soil and need sunlight, water, and air to live. They are very important because they make food for us and give us oxygen to breathe.
-          </p>
+  <h1>Let's Learn About Plants!</h1>
+</Title>
 
-          <h2>How Do Plants Grow?</h2>
-          <ul>
-                <li>🌞 Sunlight helps the plant make food.</li>
-                <li>💧 The roots take in water from the soil.</li>
-                <li>🌬️ The leaves take in air (carbon dioxide).</li>
-                <li>🌿 The plant uses these things to make its own food!</li>
-          </ul>
+<HomeContainer>
+  <h2>What Are Plants?</h2>
+  <p>
+    Plants are living things that grow in the soil. They need sunlight, water, and air to stay alive. Plants are important because they produce food and oxygen, which help animals and humans survive.
+  </p>
 
-          <h2>Parts of a Plant:</h2> 
-          <ul>
-            <li>1. Root - holds the plant in the soil and takes in water and minerals.</li>
-            <li>2. Stem – carries water and food to different parts of the plant.</li>
-            <li>3. Leaves – make food for the plant using sunlight.</li>
-            <li>4. Flower – helps the plant make seeds.</li>
-            <li>5. Fruit – holds the seeds of the plant.</li>
-            </ul>
-        <h2>Types of Plants</h2>
+  <h2>How Do Plants Grow?</h2>
+  <p>
+    Plants grow by using sunlight, water, and air in a special way. Here’s how:
+  </p>
   <ul>
-    <li><strong>Trees</strong> – Big plants with strong stems (e.g., mango or banyan trees).</li>
-    <li><strong>Shrubs</strong> – Smaller than trees, with many branches (e.g., rose plants).</li>
-    <li><strong>Herbs</strong> – Small, soft plants (e.g., mint or coriander).</li>
-    <li><strong>Climbers</strong> – Need support to grow (e.g., money plant or grapevine).</li>
-    <li><strong>Creepers</strong> – Grow along the ground (e.g., pumpkin or watermelon).</li>
+    <li>🌞 Sunlight gives energy for the plant to make food.</li>
+    <li>💧 Roots absorb water and nutrients from the soil.</li>
+    <li>🌬️ Leaves take in carbon dioxide from the air.</li>
+    <li>🌿 The plant combines these things to make its own food and grow.</li>
   </ul>
-      </HomeContainer>
+  <p>
+    In short, plants turn sunlight, water, and air into food for themselves. Can you explain how each part helps the plant grow?
+  </p>
+
+  <h2>Parts of a Plant</h2>
+  <p>
+    Each part of a plant has a job. Understanding these jobs helps us see how plants stay alive.
+  </p>
+  <ul>
+    <li><strong>Root</strong> – Holds the plant in the soil and absorbs water and minerals.</li>
+    <li><strong>Stem</strong> – Moves water and food to different parts of the plant.</li>
+    <li><strong>Leaves</strong> – Make food for the plant using sunlight.</li>
+    <li><strong>Flower</strong> – Helps the plant produce seeds.</li>
+    <li><strong>Fruit</strong> – Protects and carries the seeds.</li>
+  </ul>
+  <p>Think about this: What would happen if a plant did not have roots or leaves?</p>
+
+  <h2>Types of Plants</h2>
+  <p>
+    Plants can be grouped by how they grow. Understanding their types helps us know where they might grow best.
+  </p>
+  <ul>
+    <li><strong>Trees</strong> – Tall and strong with big stems (e.g., mango tree).</li>
+    <li><strong>Shrubs</strong> – Smaller plants with many branches (e.g., rose).</li>
+    <li><strong>Herbs</strong> – Small and soft (e.g., mint or coriander).</li>
+    <li><strong>Climbers</strong> – Grow with support, like a rope (e.g., money plant).</li>
+    <li><strong>Creepers</strong> – Spread along the ground (e.g., pumpkin).</li>
+  </ul>
+  <p>Can you match these types of plants to what you see around your home or garden?</p>
+</HomeContainer>
+
 
       <ButtonContainer>
         <Link to="/rw_quiz2">

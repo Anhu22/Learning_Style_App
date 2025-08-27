@@ -6,6 +6,7 @@ const QuizContainer = styled.div`
   margin: 20px;
   padding: 20px;
   background: linear-gradient(135deg, rgb(166, 243, 243), rgb(244, 180, 250)); 
+  border-radius: 12px;
 `;
 
 const Title = styled.div`
@@ -16,6 +17,12 @@ const Title = styled.div`
 
 const QuestionContainer = styled.div`
   margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.3); /* semi-transparent white */
+  border-radius: 12px;
+  backdrop-filter: blur(8px); /* frosted glass effect */
+  -webkit-backdrop-filter: blur(8px); /* for Safari */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
 
 const Question = styled.p`
@@ -25,7 +32,7 @@ const Question = styled.p`
 
 const AnswerOption = styled.label`
   display: block;
-  margin-top: 10px;
+  margin-top: 8px;
   font-size: 16px;
   cursor: pointer;
 `;
@@ -38,6 +45,7 @@ const SubmitButton = styled.button`
   cursor: pointer;
   font-size: 16px;
   border-radius: 5px;
+  margin-top: 15px; /* Added margin-top for consistency */
   transition: background-color 0.3s;
 
   &:hover {
@@ -74,7 +82,7 @@ const Quiz = () => {
     setSubmitted(true);
 
     // Store the score in localStorage
-    localStorage.setItem("visualQuizScore", calculatedScore);
+    localStorage.setItem("visualQuizScore1", calculatedScore);
   };
 
   const questions = [
@@ -138,10 +146,10 @@ const Quiz = () => {
           <br></br>
           <SubmitButton
             onClick={() => {
-              navigate("/kinesthetic");
+              navigate("/visual2");
             }}
           >
-            Proceed a Gamified Quiz
+            Proceed to Next
           </SubmitButton>
         </div>
       )}

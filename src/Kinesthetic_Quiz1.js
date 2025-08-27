@@ -1,299 +1,208 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-const PageBackground = styled.div`
-  background-color: #e0f7fa;
-  min-height: 100vh;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Container = styled.div`
-  margin: 30px auto;
-  padding: 30px;
-  max-width: 700px;
-  border-radius: 15px;
-  background: linear-gradient(135deg, rgb(166, 243, 243), rgb(244, 180, 250));
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-`;
-
-const Title = styled.h2`
-  text-align: center;
-  font-size: 26px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
-`;
-
-const Instruction = styled.p`
-  text-align: center;
-  font-size: 18px;
-  margin-bottom: 30px;
-`;
-
-const PizzaBox = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 220px;
-  height: 220px;
-  margin: 0 auto 20px auto;
-  background-color: #fff3e0;
-  border: 3px dashed #ff9800;
-  border-radius: 12px;
-  padding: 10px;
-`;
-
-const Slice = styled.div`
-  width: 80px;
-  height: 80px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 20px;
-`;
-
-const ActionButton = styled.button`
-  padding: 10px 20px;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-`;
-
-const AddButton = styled(ActionButton)`
-  background-color: #4caf50;
-  &:hover {
-    background-color: #43a047;
-  }
-`;
-
-const RemoveButton = styled(ActionButton)`
-  background-color: #f44336;
-  &:hover {
-    background-color: #d32f2f;
-  }
-`;
-
-const SubmitButton = styled(ActionButton)`
-  background-color: #ff7f50;
-  &:hover {
-    background-color: #e96b3a;
-  }
-`;
-
-const ProgressBarWrapper = styled.div`
-  background: #ddd;
-  border-radius: 10px;
-  height: 15px;
-  margin-bottom: 20px;
-  overflow: hidden;
-`;
-
-const ProgressBarFill = styled.div`
-  background: #4caf50;
-  height: 100%;
-  width: ${(props) => props.width}%;
-  transition: width 0.5s ease-in-out;
-`;
-
-const PizzaFractionGame = () => {
-  const [slices, setSlices] = useState([]);
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [quizEnded, setQuizEnded] = useState(false);
-  const navigate = useNavigate();
-
-  const questions = [
-  {
-    title: "🍕 Fulfill Anna’s Order!",
-    instruction: "Anna is very hungry! She wants a full pizza made only of Vegetable slices.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 4,
-    },
-  },
-  {
-    title: "🍕 Fulfill Ben’s Order!",
-    instruction: "Ben loves pepperoni! He ordered 3/4 Pepperoni Pizza and 1/4 Vegetable Pizza.",
-    correctSlices: {
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 3,
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 1,
-    },
-  },
-  {
-    title: "🍕 Fulfill Clara’s Order!",
-    instruction: "Clara wants a perfectly balanced pizza: 1/2 Vegetable Pizza and 1/2 Pepperoni Pizza.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 2,
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 2,
-    },
-  },
-  {
-    title: "🍕 Fulfill Daniel’s Order!",
-    instruction: "Daniel is a veggie fan! He wants 3/4 Vegetable Pizza and 1/4 Pepperoni Pizza.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 3,
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 1,
-    },
-  },
-  {
-    title: "🍕 Fulfill Emma’s Order!",
-    instruction: "Emma is not that hungry. She only wants 1/2 of a pizza made with Pepperoni.",
-    correctSlices: {
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 2,
-    },
-  },
-  {
-    title: "🍕 Fulfill Frank’s Order!",
-    instruction: "Frank just wants a small snack. He ordered only 1/4 Vegetable Pizza.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 1,
-    },
-  },
-  {
-    title: "🍕 Fulfill Grace’s Order!",
-    instruction: "Grace wants something simple: 1/2 Vegetable Pizza and 1/2 Pepperoni Pizza.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 2,
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 2,
-    },
-  },
-  {
-    title: "🍕 Fulfill Henry’s Order!",
-    instruction: "Henry doesn’t like too much veggie. He ordered 1/4 Vegetable Pizza and 1/2 Pepperoni Pizza.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 1,
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 2,
-    },
-  },
-  {
-    title: "🍕 Fulfill Ivy’s Order!",
-    instruction: "Ivy is very hungry and wants a full pizza made with Pepperoni only.",
-    correctSlices: {
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 4,
-    },
-  },
-  {
-    title: "🍕 Fulfill Tom’s Order!",
-    instruction: "Tom wants to buy a 1/2 Vegetable Pizza and 1/2 Pepperoni Pizza.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 2,
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 2,
-    },
-  },
+// ------------------ Config ------------------
+const BODIES = [
+  { id: "sun", name: "Sun", hint: "I’m a big burning star at the center! ☀️" },
+  { id: "mercury", name: "Mercury", hint: "I’m the closest planet to the Sun! 🔥" },
+  { id: "venus", name: "Venus", hint: "I’m the hottest planet! 🌋" },
+  { id: "earth", name: "Earth", hint: "I’m where YOU live! 🌍" },
+  { id: "mars", name: "Mars", hint: "I’m red and dusty! 🔴" },
+  { id: "jupiter", name: "Jupiter", hint: "I’m the biggest planet! 🌪️" },
+  { id: "saturn", name: "Saturn", hint: "I have shiny rings! 💍" },
+  { id: "uranus", name: "Uranus", hint: "I roll on my side! 🤸" },
+  { id: "neptune", name: "Neptune", hint: "I’m deep blue and windy! 💨" },
 ];
 
+// ------------------ Styled Components ------------------
+const AppWrap = styled.div`
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1e3c72, #2a5298);
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+`;
 
-  const sliceImages = [
-    "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png",
-    "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png",
-  ];
+const Title = styled.h1`
+  font-size: 30px;
+  color: #ffd166;
+  text-shadow: 2px 2px 6px #000;
+`;
 
-  const currentQuestion = questions[questionIndex];
+const BodyContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 20px;
+  justify-content: center;
+`;
 
-  const handleAddSlice = (type) => {
-    if (slices.length < 4) {
-      setSlices([...slices, sliceImages[type]]);
-    }
-  };
+const PlanetCard = styled.div`
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: ${(props) => props.bg};
+  box-shadow: inset -6px -6px 12px rgba(0,0,0,0.4),
+              inset 6px 6px 12px rgba(255,255,255,0.2),
+              0px 0px 20px ${(props) => props.glow};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.2s;
 
-  const handleRemoveSlice = () => {
-    if (slices.length > 0) {
-      setSlices(slices.slice(0, -1));
-    }
-  };
+  &:hover {
+    transform: scale(1.15);
+  }
+`;
 
-  const handleSubmit = () => {
-    let points = 0;
+const AnswerBox = styled.div`
+  width: 320px;
+  min-height: 120px;
+  border: 3px dashed #ffb703;
+  border-radius: 16px;
+  background: #fffbea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px;
+  font-size: 18px;
+  text-align: center;
+  padding: 10px;
+  color: #000;
+`;
 
-    if (currentQuestion.correctSlices) {
-      const counts = slices.reduce((acc, img) => {
-        acc[img] = (acc[img] || 0) + 1;
-        return acc;
-      }, {});
-      const isCorrect = Object.entries(currentQuestion.correctSlices).every(
-        ([img, count]) => counts[img] === count
-      );
-      points = isCorrect ? 1 : 0;
-    }
+const Button = styled.button`
+  background: #ffd166;
+  border: none;
+  color: #000;
+  font-weight: bold;
+  padding: 10px 22px;
+  border-radius: 14px;
+  cursor: pointer;
+  margin: 10px;
+  font-size: 16px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
 
-    localStorage.setItem(`pizzaFractionScore_Q${questionIndex + 1}`, points);
+  &:hover {
+    background: #ffb703;
+  }
+`;
 
-    // Auto move to next question after 1 second
-    setTimeout(() => {
-      if (questionIndex < questions.length - 1) {
-        setQuestionIndex(questionIndex + 1);
-        setSlices([]);
-      } else {
-        let total = 0;
-        for (let i = 1; i <= questions.length; i++) {
-          total += parseInt(localStorage.getItem(`pizzaFractionScore_Q${i}`)) || 0;
-        }
-        localStorage.setItem("pizzaFractionTotalScore", total);
-        setQuizEnded(true);
-      }
-    }, 1000);
-  };
-
-  const progressPercent = ((questionIndex + 1) / questions.length) * 100;
-
-  return (
-    <PageBackground>
-      <Container>
-        {!quizEnded ? (
-          <>
-            <ProgressBarWrapper>
-              <ProgressBarFill width={progressPercent} />
-            </ProgressBarWrapper>
-
-            <Title>{currentQuestion.title}</Title>
-            <Instruction>{currentQuestion.instruction}</Instruction>
-
-            <ButtonRow>
-              <AddButton onClick={() => handleAddSlice(0)}>
-                🍕 Vegetable Slice
-              </AddButton>
-              <AddButton onClick={() => handleAddSlice(1)}>
-                🍕 Pepperoni Slice
-              </AddButton>
-              <RemoveButton onClick={handleRemoveSlice}>
-                ➖ Remove Slice
-              </RemoveButton>
-            </ButtonRow>
-
-            <PizzaBox>
-              {slices.map((src, idx) => (
-                <Slice key={idx} style={{ backgroundImage: `url(${src})` }} />
-              ))}
-            </PizzaBox>
-
-            <SubmitButton onClick={handleSubmit}>✅ Submit Answer</SubmitButton>
-          </>
-        ) : (
-          <>
-            <Title>🎊 Quiz Completed!</Title>
-            <Instruction>Thanks for playing the Pizza Fraction Game!</Instruction>
-            <ButtonRow>
-              <SubmitButton onClick={() => navigate("/audio")}>
-                Proceed to Audio Quiz
-              </SubmitButton>
-            </ButtonRow>
-          </>
-        )}
-      </Container>
-    </PageBackground>
-  );
+// Colors + glow for planets & Sun
+const bodyStyles = {
+  sun: { bg: "radial-gradient(circle, #ffdd00, #ff8800)", glow: "#ffdd00" },
+  mercury: { bg: "radial-gradient(circle, #b3b3b3, #6e6e6e)", glow: "#cfcfcf" },
+  venus: { bg: "radial-gradient(circle, #f4a261, #b3541e)", glow: "#f4a261" },
+  earth: { bg: "radial-gradient(circle, #2a9d8f, #264653)", glow: "#2a9d8f" },
+  mars: { bg: "radial-gradient(circle, #e63946, #6d1b22)", glow: "#e63946" },
+  jupiter: { bg: "radial-gradient(circle, #f77f00, #9d4d00)", glow: "#f77f00" },
+  saturn: { bg: "radial-gradient(circle, #ffba08, #9a6c00)", glow: "#ffba08" },
+  uranus: { bg: "radial-gradient(circle, #48cae4, #0077b6)", glow: "#48cae4" },
+  neptune: { bg: "radial-gradient(circle, #4361ee, #1a237e)", glow: "#4361ee" },
 };
 
-export default PizzaFractionGame;
+// ------------------ Main Component ------------------
+export default function SpaceExplorerGame() {
+  const [target, setTarget] = useState(null);
+  const [scores, setScores] = useState([]); // store per-question scores
+  const [missionCount, setMissionCount] = useState(0);
+  const navigate = useNavigate();
+  const TOTAL_MISSIONS = 5;
+
+  function nextMission() {
+    if (missionCount < TOTAL_MISSIONS) {
+      const pick = BODIES[Math.floor(Math.random() * BODIES.length)];
+      setTarget(pick);
+    } else {
+      setTarget(null); // stop showing new missions
+    }
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    const bodyId = e.dataTransfer.getData("body");
+    const body = BODIES.find((b) => b.id === bodyId);
+
+    if (!body || !target) return;
+
+    const isCorrect = body.id === target.id;
+    const points = isCorrect ? 2 : 0;
+
+    const missionNumber = missionCount + 1;
+    localStorage.setItem(`spaceExplorerScore_M${missionNumber}`, points);
+
+    setScores((prev) => [...prev, points]);
+    setMissionCount(missionNumber);
+
+    const totalScore = scores.reduce((sum, score) => sum + score, 0) + points;
+    localStorage.setItem("kinesthetictotalscore", totalScore);
+
+    if (missionNumber < TOTAL_MISSIONS) {
+      nextMission();
+    } else {
+      setTarget(null); // stop after final mission
+    }
+  }
+
+  return (
+    <AppWrap>
+      <Title>🌞🪐 Space Explorer Game</Title>
+
+      {missionCount < TOTAL_MISSIONS ? (
+        <Button onClick={nextMission}>
+          {missionCount === 0 ? "🌟 Start Mission" : "➡️ Next Mission"}
+        </Button>
+      ) : (
+                <Button 
+                  onClick={() => {
+                    navigate("/kinesthetic2");
+                  }}
+                >
+                  Proceed to Next
+                </Button>
+      )}
+
+      {target && missionCount < TOTAL_MISSIONS && (
+        <p style={{ fontSize: "18px", marginTop: "10px" }}>
+          <strong>Mission {missionCount + 1}:</strong> {target.hint}
+        </p>
+      )}
+
+      {/* Answer Drop Box */}
+      {missionCount < TOTAL_MISSIONS && (
+        <AnswerBox
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+        >
+          {target ? "👉 Drag the correct one here!" : "Press Start to begin 🚀"}
+        </AnswerBox>
+      )}
+
+      {/* Planets & Sun to Drag */}
+      {missionCount < TOTAL_MISSIONS && (
+        <BodyContainer>
+          {BODIES.map((b) => (
+            <PlanetCard
+              key={b.id}
+              draggable
+              bg={bodyStyles[b.id].bg}
+              glow={bodyStyles[b.id].glow}
+              onDragStart={(e) => e.dataTransfer.setData("body", b.id)}
+            >
+              {b.name}
+            </PlanetCard>
+          ))}
+        </BodyContainer>
+      )}
+    </AppWrap>
+  );
+}
