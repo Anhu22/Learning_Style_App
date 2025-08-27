@@ -8,6 +8,7 @@ export const ScoreProvider = ({ children }) => {
   const [scores, setScores] = useState({
     read: null,
     video: null,
+    kinesthetic: null,
   });
 
   const setReadScore = (score) => {
@@ -18,8 +19,12 @@ export const ScoreProvider = ({ children }) => {
     setScores((prevScores) => ({ ...prevScores, video: score }));
   };
 
+  const setKinestheticScore = (score) => {
+    setScores((prevScores) => ({ ...prevScores, kinesthetic: score }));
+  };
+
   return (
-    <ScoreContext.Provider value={{ scores, setReadScore, setVideoScore }}>
+    <ScoreContext.Provider value={{ scores, setReadScore, setVideoScore, setKinestheticScore }}>
       {children}
     </ScoreContext.Provider>
   );

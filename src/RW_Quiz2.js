@@ -141,7 +141,17 @@ const Quiz = () => {
       ))}
 
       {!submitted ? (
-        <SubmitButton onClick={handleSubmit}>Submit Quiz</SubmitButton>
+        <div style={{ display: 'flex', gap: '20px', marginTop: '15px' }}>
+          {/* Skip button - always visible */}
+          <SubmitButton 
+            style={{ background: '#f44336' }}
+            onClick={() => navigate('/readwrite3')}
+          >
+            Skip ⏭️
+          </SubmitButton>
+          
+          <SubmitButton onClick={handleSubmit}>Submit Quiz</SubmitButton>
+        </div>
       ) : (
         <div>
           <SubmitButton onClick={() => navigate("/readwrite3")}>

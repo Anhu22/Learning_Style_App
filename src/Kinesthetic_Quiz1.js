@@ -115,13 +115,26 @@ export default function SpaceExplorerGame() {
   const [target, setTarget] = useState(null);
   const [scores, setScores] = useState([]); // store per-question scores
   const [missionCount, setMissionCount] = useState(0);
+  const [usedBodies, setUsedBodies] = useState([]); // Track used celestial bodies
   const navigate = useNavigate();
   const TOTAL_MISSIONS = 5;
 
   function nextMission() {
     if (missionCount < TOTAL_MISSIONS) {
-      const pick = BODIES[Math.floor(Math.random() * BODIES.length)];
-      setTarget(pick);
+      // Get available bodies that haven't been used yet
+      const availableBodies = BODIES.filter(body => !usedBodies.includes(body.id));
+      
+      if (availableBodies.length === 0) {
+        // If all bodies have been used, reset the used list
+        setUsedBodies([]);
+        const pick = BODIES[Math.floor(Math.random() * BODIES.length)];
+        setTarget(pick);
+        setUsedBodies(prev => [...prev, pick.id]);
+      } else {
+        const pick = availableBodies[Math.floor(Math.random() * availableBodies.length)];
+        setTarget(pick);
+        setUsedBodies(prev => [...prev, pick.id]);
+      }
     } else {
       setTarget(null); // stop showing new missions
     }
@@ -157,19 +170,29 @@ export default function SpaceExplorerGame() {
     <AppWrap>
       <Title>🌞🪐 Space Explorer Game</Title>
 
-      {missionCount < TOTAL_MISSIONS ? (
-        <Button onClick={nextMission}>
-          {missionCount === 0 ? "🌟 Start Mission" : "➡️ Next Mission"}
+      <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
+        {/* Skip button - always visible */}
+        <Button 
+          style={{ background: '#f44336' }}
+          onClick={() => navigate('/kinesthetic2')}
+        >
+          Skip ⏭️
         </Button>
-      ) : (
-                <Button 
-                  onClick={() => {
-                    navigate("/kinesthetic2");
-                  }}
-                >
-                  Proceed to Next
-                </Button>
-      )}
+
+        {missionCount < TOTAL_MISSIONS ? (
+          <Button onClick={nextMission}>
+            {missionCount === 0 ? "🌟 Start Mission" : "➡️ Next Mission"}
+          </Button>
+        ) : (
+          <Button 
+            onClick={() => {
+              navigate("/kinesthetic2");
+            }}
+          >
+            Proceed to Next
+          </Button>
+        )}
+      </div>
 
       {target && missionCount < TOTAL_MISSIONS && (
         <p style={{ fontSize: "18px", marginTop: "10px" }}>

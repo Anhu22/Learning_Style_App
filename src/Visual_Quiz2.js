@@ -142,7 +142,17 @@ const Quiz = () => {
         </QuestionContainer>
       ))}
 
-      <SubmitButton onClick={handleSubmit}>Submit </SubmitButton>
+      <div style={{ display: 'flex', gap: '20px', marginTop: '15px' }}>
+        {/* Skip button - always visible */}
+        <SubmitButton 
+          style={{ background: '#f44336' }}
+          onClick={() => navigate('/visual3')}
+        >
+          Skip ⏭️
+        </SubmitButton>
+        
+        <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
+      </div>
       <br></br>
       {submitted && (
         <div>

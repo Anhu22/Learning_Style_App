@@ -209,6 +209,24 @@ const PizzaFractionGame = () => {
     }, 1000);
   };
 
+  const handleSkip = () => {
+    // Set score to 0 for skipped question
+    localStorage.setItem(`pizzaFractionScore_Q${questionIndex + 1}`, 0);
+    
+    // Move to next question immediately
+    if (questionIndex < questions.length - 1) {
+      setQuestionIndex(questionIndex + 1);
+      setSlices([]);
+    } else {
+      let total = 0;
+      for (let i = 1; i <= questions.length; i++) {
+        total += parseInt(localStorage.getItem(`pizzaFractionScore_Q${i}`)) || 0;
+      }
+      localStorage.setItem("kinesthetictotalscore", total);
+      setQuizEnded(true);
+    }
+  };
+
   const progressPercent = ((questionIndex + 1) / questions.length) * 100;
 
   return (
@@ -241,7 +259,17 @@ const PizzaFractionGame = () => {
               ))}
             </PizzaBox>
 
-            <SubmitButton onClick={handleSubmit}>✅ Submit Answer</SubmitButton>
+            <div style={{ display: 'flex', gap: '20px', marginTop: '15px', justifyContent: 'center' }}>
+              {/* Skip button - always visible */}
+              <SubmitButton 
+                style={{ background: '#f44336' }}
+                onClick={handleSkip}
+              >
+                Skip ⏭️
+              </SubmitButton>
+              
+              <SubmitButton onClick={handleSubmit}>✅ Submit Answer</SubmitButton>
+            </div>
           </>
         ) : (
           <>

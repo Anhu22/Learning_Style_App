@@ -1,231 +1,269 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { ScoreContext } from "./ScoreProvider";
 
-// === Config ===
-const ITEMS = [
-  { id: "water", label: "💧 Water" },
-  { id: "co2", label: "🌬️ CO₂" },
-  { id: "glucose", label: "🌱 Glucose" },
-  { id: "oxygen", label: "O₂" }
-];
-
-const CORRECT_ORDER = ["water", "co2", "glucose", "oxygen"];
-
-// === Styled Components ===
-const PageWrapper = styled.div`
+// 🌱 Styled Components
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #dff6ff;
   min-height: 100vh;
-  padding: 50px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(135deg, #a6f3f3, #f4b4fa);
+  padding: 20px;
+`;
+
+const Diagram = styled.div`
   position: relative;
+  background: url("/image/Photosynthesis.png") no-repeat center/contain;
+  width: 600px;  /* reduced from 900px */
+  height: 450px; /* reduced from 700px */
+  margin-top: 20px;
 `;
 
-const Title = styled.h2`
-  font-size: 2rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 30px;
-`;
 
-const PlantArea = styled.div`
-  position: relative;
-  width: 500px;
-  height: 400px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 50px;
-`;
 
-const Plant = styled.div`
-  font-size: 4rem;
-`;
-
-const SunCorner = styled.div`
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  font-size: 2.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const Arrow = styled.div`
-  width: 2px;
-  height: 100px;
-  background: #ffcc00;
-  transform: rotate(45deg);
-  margin-top: 5px;
-`;
 
 const DropZone = styled.div`
   position: absolute;
   width: 140px;
-  height: 50px;
-  border: 2px dashed #fff;
-  border-radius: 12px;
+  height: 70px;
+  border: 3px dashed #444;
+  border-radius: 50%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-weight: 600;
-  color: #fff;
-`;
-
-const DragBox = styled.div`
-  display: flex;
   justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
+  font-weight: bold;
+  color: #333;
+  background: #fff; /* fully opaque */
 `;
 
-const DragCard = styled(motion.div)`
-  padding: 18px 24px;
-  min-width: 120px;
-  text-align: center;
-  font-size: 16px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.55);
-  border-radius: 16px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+
+const WordBank = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+const Word = styled.div`
+  padding: 10px 15px;
+  background: #fff;
+  border: 2px solid #333;
+  border-radius: 8px;
   cursor: grab;
 `;
 
-const StyledButton = styled.button`
-  padding: 12px 28px;
-  margin-top: 30px;
-  background: linear-gradient(135deg, #4cafef, #1dd1a1);
-  border: none;
-  color: white;
-  border-radius: 25px;
-  font-size: 17px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
-  &:hover { transform: scale(1.05); }
-`;
+// 📦 Initial draggable words
+const initialWords = ["Sunlight", "Water", "Oxygen", "Carbon dioxide", "Sugars"];
 
-const WrongAnimation = styled(motion.div)`
-  margin-top: 30px;
-  color: #ff4d6d;
-  text-align: center;
-`;
+// 📦 Drop zone ids
+const dropZoneIds = ["sunlight", "water", "oxygen", "carbon", "sugar"];
 
-// === Activity Component ===
-const Activity = () => {
+const KinestheticPhotosynthesis = () => {
+  const { setKinestheticScore } = useContext(ScoreContext);
   const navigate = useNavigate();
-  const [inventory, setInventory] = useState(ITEMS.map(i => i.id));
-  const [placed, setPlaced] = useState({});
-  const [stage, setStage] = useState("idle");
-  const [wrongAnim, setWrongAnim] = useState(false);
+  const [bank, setBank] = useState(initialWords);
+  const [zones, setZones] = useState({
+    sunlight: null,
+    water: null,
+    oxygen: null,
+    carbon: null,
+    sugar: null,
+  });
 
-  const onDragEnd = (res) => {
-    if (!res.destination) return;
-    const np = [...inventory];
-    const [item] = np.splice(res.source.index, 1);
-    np.splice(res.destination.index, 0, item);
-    setInventory(np);
-  };
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
 
-  const handleDrop = (id, key) => {
-    if (id === key) {
-      setPlaced(prev => ({ ...prev, [key]: ITEMS.find(x => x.id === key).label }));
-      if (Object.keys(placed).length + 1 === CORRECT_ORDER.length) {
-        setStage("complete");
-      }
-    } else {
-      setWrongAnim(true);
-      setTimeout(() => setWrongAnim(false), 1500);
+    const { source, destination, draggableId } = result;
+
+    // From bank → to zone
+    if (source.droppableId === "bank" && dropZoneIds.includes(destination.droppableId)) {
+      setBank(bank.filter((w) => w !== draggableId));
+      setZones({ ...zones, [destination.droppableId]: draggableId });
+    }
+
+    // From zone → back to bank
+    else if (dropZoneIds.includes(source.droppableId) && destination.droppableId === "bank") {
+      setZones({ ...zones, [source.droppableId]: null });
+      setBank([...bank, draggableId]);
     }
   };
 
+  const allPlaced = Object.values(zones).every((z) => z !== null);
+
+  const calculateScore = () => {
+    let newScore = 0;
+    const correctAnswers = {
+      sunlight: "Sunlight",
+      water: "Water",
+      oxygen: "Oxygen",
+      carbon: "Carbon dioxide",
+      sugar: "Sugars",
+    };
+
+    for (const [key, value] of Object.entries(zones)) {
+      if (value === correctAnswers[key]) {
+        newScore += 1; // Increment score for correct placement
+      }
+    }
+    setKinestheticScore(newScore); // Update score in context
+  };
+
   return (
-    <PageWrapper>
-      <Title>Photosynthesis Game 🌱</Title>
-
-      <PlantArea>
-        <Plant>🌱</Plant>
-
-        {/* Sun in corner */}
-        <SunCorner>
-          ☀️
-          <Arrow />
-        </SunCorner>
-
-        {/* Drop Zones */}
-        <DropZone 
-          style={{ bottom: 20, left: 20 }}
-          onClick={() => inventory[0] && handleDrop(inventory[0], "water")}
-        >
-          {placed.water || "💧 Water"}
-        </DropZone>
-
-        <DropZone 
-          style={{ top: 20, right: 20 }}
-          onClick={() => inventory[0] && handleDrop(inventory[0], "co2")}
-        >
-          {placed.co2 || "🌬️ CO₂"}
-        </DropZone>
-
-        <DropZone 
-          style={{ bottom: 20, right: 150 }}
-          onClick={() => inventory[0] && handleDrop(inventory[0], "glucose")}
-        >
-          {placed.glucose || "🌱 Glucose"}
-        </DropZone>
-
-        <DropZone 
-          style={{ bottom: 20, right: 20 }}
-          onClick={() => inventory[0] && handleDrop(inventory[0], "oxygen")}
-        >
-          {placed.oxygen || "O₂"}
-        </DropZone>
-      </PlantArea>
-
+    <Wrapper>
+      <h1>🌿 Photosynthesis Drag & Drop</h1>
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="box" direction="horizontal">
-          {(prov) => (
-            <DragBox ref={prov.innerRef} {...prov.droppableProps}>
-              {inventory.map((id, i) => (
-                <Draggable draggableId={id} index={i} key={id}>
-                  {(prov) => (
-                    <DragCard
-                      ref={prov.innerRef}
-                      {...prov.draggableProps}
-                      {...prov.dragHandleProps}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {ITEMS.find(x => x.id === id).label}
-                    </DragCard>
+        <Diagram>
+          {/* Drop Zones - positioned exactly on the image circles */}
+          <Droppable droppableId="sunlight">
+            {(provided) => (
+              <DropZone ref={provided.innerRef} {...provided.droppableProps} style={{ top: "100px", left: "80px" }}>
+                {zones.sunlight && (
+                  <Draggable draggableId={zones.sunlight} index={0}>
+                    {(provided) => (
+                      <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        {zones.sunlight}
+                      </Word>
+                    )}
+                  </Draggable>
+                )}
+                {provided.placeholder}
+              </DropZone>
+            )}
+          </Droppable>
+
+          <Droppable droppableId="carbon">
+            {(provided) => (
+              <DropZone ref={provided.innerRef} {...provided.droppableProps} style={{ top: "220px", left: "55px" }}>
+                {zones.carbon && (
+                  <Draggable draggableId={zones.carbon} index={0}>
+                    {(provided) => (
+                      <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        {zones.carbon}
+                      </Word>
+                    )}
+                  </Draggable>
+                )}
+                {provided.placeholder}
+              </DropZone>
+            )}
+          </Droppable>
+
+          <Droppable droppableId="water">
+            {(provided) => (
+              <DropZone ref={provided.innerRef} {...provided.droppableProps} style={{ top: "340px", left: "60px" }}>
+                {zones.water && (
+                  <Draggable draggableId={zones.water} index={0}>
+                    {(provided) => (
+                      <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        {zones.water}
+                      </Word>
+                    )}
+                  </Draggable>
+                )}
+                {provided.placeholder}
+              </DropZone>
+            )}
+          </Droppable>
+
+          <Droppable droppableId="oxygen">
+            {(provided) => (
+              <DropZone ref={provided.innerRef} {...provided.droppableProps} style={{ top: "120px", left: "440px" }}>
+                {zones.oxygen && (
+                  <Draggable draggableId={zones.oxygen} index={0}>
+                    {(provided) => (
+                      <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        {zones.oxygen}
+                      </Word>
+                    )}
+                  </Draggable>
+                )}
+                {provided.placeholder}
+              </DropZone>
+            )}
+          </Droppable>
+
+          <Droppable droppableId="sugar">
+            {(provided) => (
+              <DropZone ref={provided.innerRef} {...provided.droppableProps} style={{ top: "280px", left: "460px" }}>
+                {zones.sugar && (
+                  <Draggable draggableId={zones.sugar} index={0}>
+                    {(provided) => (
+                      <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        {zones.sugar}
+                      </Word>
+                    )}
+                  </Draggable>
+                )}
+                {provided.placeholder}
+              </DropZone>
+            )}
+          </Droppable>
+        </Diagram>
+
+        {/* Word Bank */}
+        <Droppable droppableId="bank" direction="horizontal">
+          {(provided) => (
+            <WordBank ref={provided.innerRef} {...provided.droppableProps}>
+              {bank.map((word, index) => (
+                <Draggable key={word} draggableId={word} index={index}>
+                  {(provided) => (
+                    <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                      {word}
+                    </Word>
                   )}
                 </Draggable>
               ))}
-              {prov.placeholder}
-            </DragBox>
+              {provided.placeholder}
+            </WordBank>
           )}
         </Droppable>
       </DragDropContext>
 
-      {wrongAnim && (
-        <WrongAnimation initial={{ opacity:0 }} animate={{ opacity:1 }}>
-          ❌ Wrong placement! Try again.
-        </WrongAnimation>
-      )}
+      {/* Action buttons */}
+      <div style={{ display: 'flex', gap: '20px', marginTop: '20px' }}>
+        {/* Skip button - always visible */}
+        <button
+          style={{
+            padding: "10px 20px",
+            fontSize: "16px",
+            background: "#f44336",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+          }}
+          onClick={() => navigate('/kinesthetic3')}
+        >
+          Skip ⏭️
+        </button>
 
-      {stage === "complete" && (
-        <StyledButton onClick={() => navigate("/result")}>
-          🎉 Completed! Next
-        </StyledButton>
-      )}
-    </PageWrapper>
+        {/* Submit button only when all zones are filled */}
+        {allPlaced && (
+          <button
+            style={{
+              padding: "10px 20px",
+              fontSize: "16px",
+              background: "#4caf50",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              calculateScore(); // Calculate score before navigating
+              navigate('/kinesthetic3');
+            }}
+          >
+            Submit ✅
+          </button>
+        )}
+      </div>
+    </Wrapper>
   );
 };
 
-export default Activity;
+export default KinestheticPhotosynthesis;

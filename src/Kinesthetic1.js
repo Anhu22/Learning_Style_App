@@ -292,6 +292,7 @@ const Kinesthetic2Enhanced = () => {
   const [target, setTarget] = useState(null);
   const [scores, setScores] = useState([]);
   const [missionCount, setMissionCount] = useState(0);
+  const [usedBodies, setUsedBodies] = useState([]); // Track used celestial bodies
   const [showInstructions, setShowInstructions] = useState(true);
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [showTutorial, setShowTutorial] = useState(true);
@@ -300,9 +301,36 @@ const Kinesthetic2Enhanced = () => {
 
   function nextMission() {
     if (missionCount < TOTAL_MISSIONS) {
-      const pick = BODIES[Math.floor(Math.random() * BODIES.length)];
-      setTarget(pick);
+      // Get available bodies that haven't been used yet
+      const availableBodies = BODIES.filter(body => !usedBodies.includes(body.id));
+      
+      if (availableBodies.length === 0) {
+        // If all bodies have been used, reset the used list
+        setUsedBodies([]);
+        const pick = BODIES[Math.floor(Math.random() * BODIES.length)];
+        setTarget(pick);
+        setUsedBodies(prev => [...prev, pick.id]);
+      } else {
+        const pick = availableBodies[Math.floor(Math.random() * availableBodies.length)];
+        setTarget(pick);
+        setUsedBodies(prev => [...prev, pick.id]);
+      }
       setShowInstructions(false);
+    } else {
+      setTarget(null);
+    }
+  }
+
+  function handleSkip() {
+    // Set score to 0 for skipped mission
+    const missionNumber = missionCount + 1;
+    localStorage.setItem(`spaceExplorerScore_M${missionNumber}`, 0);
+    
+    setScores((prev) => [...prev, 0]);
+    setMissionCount(missionNumber);
+    
+    if (missionNumber < TOTAL_MISSIONS) {
+      setTimeout(nextMission, 500); // Brief pause before next mission
     } else {
       setTarget(null);
     }
@@ -418,9 +446,21 @@ const Kinesthetic2Enhanced = () => {
         )}
 
         {target && missionCount < TOTAL_MISSIONS && (
-          <p style={{ fontSize: "18px", marginTop: "10px" }}>
-            <strong>Mission {missionCount + 1}:</strong> {target.hint}
-          </p>
+          <div style={{ textAlign: 'center', marginTop: '10px' }}>
+            <p style={{ fontSize: "18px", marginBottom: '10px' }}>
+              <strong>Mission {missionCount + 1}:</strong> {target.hint}
+            </p>
+            <Button 
+              onClick={handleSkip}
+              style={{ 
+                background: '#f44336',
+                fontSize: '14px',
+                padding: '8px 16px'
+              }}
+            >
+              Skip Mission ⏭️
+            </Button>
+          </div>
         )}
 
         {/* Answer Drop Box */}
