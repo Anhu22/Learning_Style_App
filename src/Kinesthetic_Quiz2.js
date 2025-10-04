@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -17,13 +17,10 @@ const Wrapper = styled.div`
 const Diagram = styled.div`
   position: relative;
   background: url("/image/Photosynthesis.png") no-repeat center/contain;
-  width: 600px;  /* reduced from 900px */
-  height: 450px; /* reduced from 700px */
+  width: 600px;
+  height: 450px;
   margin-top: 20px;
 `;
-
-
-
 
 const DropZone = styled.div`
   position: absolute;
@@ -36,9 +33,8 @@ const DropZone = styled.div`
   justify-content: center;
   font-weight: bold;
   color: #333;
-  background: #fff; /* fully opaque */
+  background: #fff;
 `;
-
 
 const WordBank = styled.div`
   display: flex;
@@ -54,6 +50,13 @@ const Word = styled.div`
   border: 2px solid #333;
   border-radius: 8px;
   cursor: grab;
+`;
+
+const Timer = styled.div`
+  font-size: 20px;
+  font-weight: bold;
+  margin: 10px;
+  color: #333;
 `;
 
 // 📦 Initial draggable words
@@ -73,6 +76,28 @@ const KinestheticPhotosynthesis = () => {
     carbon: null,
     sugar: null,
   });
+
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+
+  // Timer logic
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      calculateScore();
+      navigate("/kinesthetic3");
+      return;
+    }
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft, navigate]);
+
+  // Format mm:ss
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  };
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -106,18 +131,21 @@ const KinestheticPhotosynthesis = () => {
 
     for (const [key, value] of Object.entries(zones)) {
       if (value === correctAnswers[key]) {
-        newScore += 1; // Increment score for correct placement
+        newScore += 1;
       }
     }
-    setKinestheticScore(newScore); // Update score in context
+    setKinestheticScore(newScore);
+    localStorage.setItem("kinestheticQuizScore2", newScore);
   };
 
   return (
     <Wrapper>
       <h1>🌿 Photosynthesis Drag & Drop</h1>
+      <Timer>⏳ Time Left: {formatTime(timeLeft)}</Timer>
+
       <DragDropContext onDragEnd={onDragEnd}>
         <Diagram>
-          {/* Drop Zones - positioned exactly on the image circles */}
+          {/* Drop Zones */}
           <Droppable droppableId="sunlight">
             {(provided) => (
               <DropZone ref={provided.innerRef} {...provided.droppableProps} style={{ top: "100px", left: "80px" }}>
@@ -224,8 +252,7 @@ const KinestheticPhotosynthesis = () => {
       </DragDropContext>
 
       {/* Action buttons */}
-      <div style={{ display: 'flex', gap: '20px', marginTop: '20px' }}>
-        {/* Skip button - always visible */}
+      <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
         <button
           style={{
             padding: "10px 20px",
@@ -236,12 +263,11 @@ const KinestheticPhotosynthesis = () => {
             borderRadius: "8px",
             cursor: "pointer",
           }}
-          onClick={() => navigate('/kinesthetic3')}
+          onClick={() => navigate("/kinesthetic3")}
         >
           Skip ⏭️
         </button>
 
-        {/* Submit button only when all zones are filled */}
         {allPlaced && (
           <button
             style={{
@@ -254,8 +280,8 @@ const KinestheticPhotosynthesis = () => {
               cursor: "pointer",
             }}
             onClick={() => {
-              calculateScore(); // Calculate score before navigating
-              navigate('/kinesthetic3');
+              calculateScore();
+              navigate("/kinesthetic3");
             }}
           >
             Submit ✅

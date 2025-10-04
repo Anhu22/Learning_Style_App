@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -58,6 +58,25 @@ const Quiz = () => {
   const [answers, setAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [startTime, setStartTime] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+
+  useEffect(() => {
+    setStartTime(Date.now());
+  }, []);
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      if (!submitted) {
+        handleSubmit();
+      }
+      return;
+    }
+    const timerId = setInterval(() => {
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [timeLeft, submitted]);
 
   const questions = [
     {
@@ -111,9 +130,14 @@ const Quiz = () => {
       }
     });
 
+    // Calculate time taken
+    const endTime = Date.now();
+    const timeTaken = Math.floor((endTime - startTime) / 1000); // in seconds
+
     setScore(calculatedScore);
     setSubmitted(true);
     localStorage.setItem("readQuizScore2", calculatedScore);
+    localStorage.setItem("readQuizTime2", timeTaken);
   };
 
   return (

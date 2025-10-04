@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -12,6 +12,14 @@ const Title = styled.div`
   margin: 10px;
   padding: 10px;
   text-align: center;
+`;
+
+const Timer = styled.div`
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff6347;
+  text-align: center;
+  margin-bottom: 15px;
 `;
 
 const QuestionContainer = styled.div`
@@ -56,6 +64,26 @@ const Quiz = () => {
   const [answers, setAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      if (!submitted) {
+        handleSubmit();
+      }
+      return;
+    }
+    const timerId = setInterval(() => {
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [timeLeft, submitted]);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   const handleChange = (e, index) => {
     let newAnswers = [...answers];
@@ -116,6 +144,8 @@ const Quiz = () => {
         <h1>Solar System Quiz</h1>
       </Title>
 
+      <Timer>Time Left: {formatTime(timeLeft)}</Timer>
+
       <div>
         {questions.map((q, index) => (
           <QuestionContainer key={index}>
@@ -128,6 +158,7 @@ const Quiz = () => {
                   value={option}
                   checked={answers[index] === option}
                   onChange={(e) => handleChange(e, index)}
+                  disabled={submitted || timeLeft <= 0}
                 />
                 {option}
               </AnswerOption>
@@ -140,11 +171,12 @@ const Quiz = () => {
           <SubmitButton 
             style={{ background: '#f44336' }}
             onClick={() => navigate('/audio2')}
+            disabled={submitted}
           >
             Skip ⏭️
           </SubmitButton>
           
-          <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
+          <SubmitButton onClick={handleSubmit} disabled={submitted || timeLeft <= 0}>Submit</SubmitButton>
         </div>
       </div>
 

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { ScoreContext } from "./ScoreProvider";
 
 const PageBackground = styled.div`
   background-color: #e0f7fa;
@@ -98,7 +99,7 @@ const ProgressBarWrapper = styled.div`
   background: #ddd;
   border-radius: 10px;
   height: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   overflow: hidden;
 `;
 
@@ -109,54 +110,63 @@ const ProgressBarFill = styled.div`
   transition: width 0.5s ease-in-out;
 `;
 
+const TimerText = styled.div`
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #d32f2f;
+`;
+
 const PizzaFractionGame = () => {
+  const { setKinestheticScore } = useContext(ScoreContext);
   const [slices, setSlices] = useState([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [quizEnded, setQuizEnded] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes = 300 seconds
   const navigate = useNavigate();
 
   const questions = [
-  {
-    title: "🍕 Fulfill Anna’s Order!",
-    instruction: "Anna is very hungry! She wants a full pizza made only of Vegetable slices.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 4,
+    {
+      title: "🍕 Fulfill Anna’s Order!",
+      instruction: "Anna is very hungry! She wants a full pizza made only of Vegetable slices.",
+      correctSlices: {
+        "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 4,
+      },
     },
-  },
-  {
-    title: "🍕 Fulfill Ben’s Order!",
-    instruction: "Ben loves pepperoni! He ordered 3/4 Pepperoni Pizza and 1/4 Vegetable Pizza.",
-    correctSlices: {
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 3,
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 1,
+    {
+      title: "🍕 Fulfill Ben’s Order!",
+      instruction: "Ben loves pepperoni! He ordered 6/8 Pepperoni Pizza and 2/8 Vegetable Pizza.",
+      correctSlices: {
+        "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 3,
+        "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 1,
+      },
     },
-  },
-  {
-    title: "🍕 Fulfill Daniel’s Order!",
-    instruction: "Daniel is a veggie fan! He wants 3/4 Vegetable Pizza and 1/4 Pepperoni Pizza.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 3,
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 1,
+    {
+      title: "🍕 Fulfill Daniel’s Order!",
+      instruction: "Daniel is a veggie fan! He wants 6/8 Vegetable Pizza and 3/12 Pepperoni Pizza.",
+      correctSlices: {
+        "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 3,
+        "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 1,
+      },
     },
-  },
-  {
-    title: "🍕 Fulfill Henry’s Order!",
-    instruction: "Henry doesn’t like too much veggie. He ordered 1/4 Vegetable Pizza and 1/2 Pepperoni Pizza.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 1,
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 2,
+    {
+      title: "🍕 Fulfill Henry’s Order!",
+      instruction: "Henry doesn’t like too much veggie. He ordered 2/8 Vegetable Pizza and 4/8 Pepperoni Pizza.",
+      correctSlices: {
+        "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 1,
+        "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 2,
+      },
     },
-  },
-  {
-    title: "🍕 Fulfill Tom’s Order!",
-    instruction: "Tom wants to buy a 1/2 Vegetable Pizza and 1/2 Pepperoni Pizza.",
-    correctSlices: {
-      "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 2,
-      "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 2,
+    {
+      title: "🍕 Fulfill Tom’s Order!",
+      instruction: "Tom wants to buy a 3/6 Vegetable Pizza and 3/6 Pepperoni Pizza.",
+      correctSlices: {
+        "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png": 2,
+        "https://www.citypng.com/public/uploads/preview/cartoon-illustration-pepperoni-pizza-slice-image-png-7358116966795710nmjkar8to.png": 2,
+      },
     },
-  },
-];
-
+  ];
 
   const sliceImages = [
     "https://clipart-library.com/newhp/Pizza-Slice-Combo-Clip-Art.png",
@@ -164,6 +174,21 @@ const PizzaFractionGame = () => {
   ];
 
   const currentQuestion = questions[questionIndex];
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      handleEndQuiz();
+      return;
+    }
+    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  const formatTime = (seconds) => {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec < 10 ? "0" : ""}${sec}`;
+  };
 
   const handleAddSlice = (type) => {
     if (slices.length < 4) {
@@ -179,7 +204,6 @@ const PizzaFractionGame = () => {
 
   const handleSubmit = () => {
     let points = 0;
-
     if (currentQuestion.correctSlices) {
       const counts = slices.reduce((acc, img) => {
         acc[img] = (acc[img] || 0) + 1;
@@ -193,38 +217,36 @@ const PizzaFractionGame = () => {
 
     localStorage.setItem(`pizzaFractionScore_Q${questionIndex + 1}`, points);
 
-    // Auto move to next question after 1 second
     setTimeout(() => {
       if (questionIndex < questions.length - 1) {
         setQuestionIndex(questionIndex + 1);
         setSlices([]);
       } else {
-        let total = 0;
-        for (let i = 1; i <= questions.length; i++) {
-          total += parseInt(localStorage.getItem(`pizzaFractionScore_Q${i}`)) || 0;
-        }
-        localStorage.setItem("kinesthetictotalscore", total);
-        setQuizEnded(true);
+        handleEndQuiz();
       }
     }, 1000);
   };
 
   const handleSkip = () => {
-    // Set score to 0 for skipped question
     localStorage.setItem(`pizzaFractionScore_Q${questionIndex + 1}`, 0);
-    
-    // Move to next question immediately
+
     if (questionIndex < questions.length - 1) {
       setQuestionIndex(questionIndex + 1);
       setSlices([]);
     } else {
-      let total = 0;
-      for (let i = 1; i <= questions.length; i++) {
-        total += parseInt(localStorage.getItem(`pizzaFractionScore_Q${i}`)) || 0;
-      }
-      localStorage.setItem("kinesthetictotalscore", total);
-      setQuizEnded(true);
+      handleEndQuiz();
     }
+  };
+
+  const handleEndQuiz = () => {
+    let total = 0;
+    for (let i = 1; i <= questions.length; i++) {
+      total += parseInt(localStorage.getItem(`pizzaFractionScore_Q${i}`)) || 0;
+    }
+    localStorage.setItem("kinesthetictotalscore", total);
+    setKinestheticScore(total);
+    localStorage.setItem("kinestheticQuizScore3", total);
+    setQuizEnded(true);
   };
 
   const progressPercent = ((questionIndex + 1) / questions.length) * 100;
@@ -237,6 +259,8 @@ const PizzaFractionGame = () => {
             <ProgressBarWrapper>
               <ProgressBarFill width={progressPercent} />
             </ProgressBarWrapper>
+
+            <TimerText>⏳ Time Left: {formatTime(timeLeft)}</TimerText>
 
             <Title>{currentQuestion.title}</Title>
             <Instruction>{currentQuestion.instruction}</Instruction>
@@ -259,29 +283,39 @@ const PizzaFractionGame = () => {
               ))}
             </PizzaBox>
 
-            <div style={{ display: 'flex', gap: '20px', marginTop: '15px', justifyContent: 'center' }}>
-              {/* Skip button - always visible */}
-              <SubmitButton 
-                style={{ background: '#f44336' }}
+            <div
+              style={{
+                display: "flex",
+                gap: "20px",
+                marginTop: "15px",
+                justifyContent: "center",
+              }}
+            >
+              <SubmitButton
+                style={{ background: "#f44336" }}
                 onClick={handleSkip}
               >
                 Skip ⏭️
               </SubmitButton>
-              
+
               <SubmitButton onClick={handleSubmit}>✅ Submit Answer</SubmitButton>
             </div>
           </>
         ) : (
           <>
             <Title>🎊 Quiz Completed!</Title>
-            <Instruction>Thanks for playing the Pizza Fraction Game!</Instruction>
+            <Instruction>
+              {timeLeft <= 0
+                ? "⏰ Time’s up! Your quiz has ended."
+                : "Thanks for playing the Pizza Fraction Game!"}
+            </Instruction>
             <ButtonRow>
-              <SubmitButton 
+              <SubmitButton
                 onClick={() => {
-                  navigate("/audio1");
+                  navigate("/section-result");
                 }}
               >
-                Proceed to Next
+                Get the Result
               </SubmitButton>
             </ButtonRow>
           </>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -13,6 +13,14 @@ const Title = styled.div`
   margin: 10px;
   padding: 10px;
   text-align: center;
+`;
+
+const Timer = styled.div`
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff6347;
+  text-align: center;
+  margin-bottom: 15px;
 `;
 
 const QuestionContainer = styled.div`
@@ -49,7 +57,7 @@ const SubmitButton = styled.button`
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: #e55347;
+    background-color: #cc4c39;
   }
 `;
 
@@ -58,7 +66,9 @@ const Quiz = () => {
   const [answers, setAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(2700); // 45 minutes in seconds
 
+  // Sample Questions
   const questions = [
     {
       question: "1. Which part of the plant makes food using sunlight?",
@@ -92,6 +102,27 @@ const Quiz = () => {
     },
   ];
 
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      if (!submitted) {
+        handleSubmit();
+      }
+      return;
+    }
+    const timerId = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [timeLeft, submitted]);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, "0")}:${s
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
   const handleChange = (e, index) => {
     const newAnswers = [...answers];
     newAnswers[index] = e.target.value;
@@ -116,11 +147,18 @@ const Quiz = () => {
     localStorage.setItem("audioQuizScore2", calculatedScore);
   };
 
+  const handleSkip = () => {
+    localStorage.setItem("audioQuizScore2", score); // store current score (0 if unanswered)
+    navigate("/audio3");
+  };
+
   return (
     <QuizContainer>
       <Title>
         <h1>🌿 Plants Quiz</h1>
       </Title>
+
+      <Timer>Time Left: {formatTime(timeLeft)}</Timer>
 
       {questions.map((q, index) => (
         <QuestionContainer key={index}>
@@ -133,6 +171,7 @@ const Quiz = () => {
                 value={option}
                 checked={answers[index] === option}
                 onChange={(e) => handleChange(e, index)}
+                disabled={submitted || timeLeft <= 0}
               />
               {option}
             </AnswerOption>
@@ -141,16 +180,18 @@ const Quiz = () => {
       ))}
 
       {!submitted ? (
-        <div style={{ display: 'flex', gap: '20px', marginTop: '15px' }}>
-          {/* Skip button - always visible */}
-          <SubmitButton 
-            style={{ background: '#f44336' }}
-            onClick={() => navigate('/audio3')}
-          >
+        <div style={{ display: "flex", gap: "20px", marginTop: "15px" }}>
+          {/* Skip button */}
+          <SubmitButton style={{ background: "#f44336" }} onClick={handleSkip}>
             Skip ⏭️
           </SubmitButton>
-          
-          <SubmitButton onClick={handleSubmit}>Submit Quiz</SubmitButton>
+
+          <SubmitButton
+            onClick={handleSubmit}
+            disabled={submitted || timeLeft <= 0}
+          >
+            Submit Quiz
+          </SubmitButton>
         </div>
       ) : (
         <div>

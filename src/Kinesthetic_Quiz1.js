@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -113,33 +113,51 @@ const bodyStyles = {
 // ------------------ Main Component ------------------
 export default function SpaceExplorerGame() {
   const [target, setTarget] = useState(null);
-  const [scores, setScores] = useState([]); // store per-question scores
+  const [scores, setScores] = useState([]);
   const [missionCount, setMissionCount] = useState(0);
-  const [usedBodies, setUsedBodies] = useState([]); // Track used celestial bodies
+  const [usedBodies, setUsedBodies] = useState([]);
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
   const navigate = useNavigate();
   const TOTAL_MISSIONS = 5;
 
+  // Timer
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      setMissionCount(TOTAL_MISSIONS);
+      navigate("/kinesthetic2");
+      return;
+    }
+    const timerId = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [timeLeft, navigate]);
+
+  // Pick next mission
   function nextMission() {
     if (missionCount < TOTAL_MISSIONS) {
-      // Get available bodies that haven't been used yet
-      const availableBodies = BODIES.filter(body => !usedBodies.includes(body.id));
-      
+      const availableBodies = BODIES.filter(
+        (body) => !usedBodies.includes(body.id)
+      );
+
       if (availableBodies.length === 0) {
-        // If all bodies have been used, reset the used list
         setUsedBodies([]);
         const pick = BODIES[Math.floor(Math.random() * BODIES.length)];
         setTarget(pick);
-        setUsedBodies(prev => [...prev, pick.id]);
+        setUsedBodies((prev) => [...prev, pick.id]);
       } else {
-        const pick = availableBodies[Math.floor(Math.random() * availableBodies.length)];
+        const pick =
+          availableBodies[Math.floor(Math.random() * availableBodies.length)];
         setTarget(pick);
-        setUsedBodies(prev => [...prev, pick.id]);
+        setUsedBodies((prev) => [...prev, pick.id]);
       }
     } else {
-      setTarget(null); // stop showing new missions
+      setTarget(null);
+      navigate("/kinesthetic2"); // Auto proceed after last mission
     }
   }
 
+  // Handle drop
   function handleDrop(e) {
     e.preventDefault();
     const bodyId = e.dataTransfer.getData("body");
@@ -148,21 +166,26 @@ export default function SpaceExplorerGame() {
     if (!body || !target) return;
 
     const isCorrect = body.id === target.id;
-    const points = isCorrect ? 2 : 0;
+    const points = isCorrect ? 1 : 0;
 
     const missionNumber = missionCount + 1;
     localStorage.setItem(`spaceExplorerScore_M${missionNumber}`, points);
 
-    setScores((prev) => [...prev, points]);
-    setMissionCount(missionNumber);
+    setScores((prev) => {
+      const updated = [...prev, points];
+      const totalScore = updated.reduce((sum, s) => sum + s, 0);
+      localStorage.setItem("kinesthetictotalscore", totalScore);
+      localStorage.setItem("kinestheticQuizScore1", totalScore);
+      return updated;
+    });
 
-    const totalScore = scores.reduce((sum, score) => sum + score, 0) + points;
-    localStorage.setItem("kinesthetictotalscore", totalScore);
+    setMissionCount(missionNumber);
 
     if (missionNumber < TOTAL_MISSIONS) {
       nextMission();
     } else {
-      setTarget(null); // stop after final mission
+      setTarget(null);
+      navigate("/kinesthetic2");
     }
   }
 
@@ -170,11 +193,10 @@ export default function SpaceExplorerGame() {
     <AppWrap>
       <Title>🌞🪐 Space Explorer Game</Title>
 
-      <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-        {/* Skip button - always visible */}
-        <Button 
-          style={{ background: '#f44336' }}
-          onClick={() => navigate('/kinesthetic2')}
+      <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+        <Button
+          style={{ background: "#f44336" }}
+          onClick={() => navigate("/kinesthetic2")}
         >
           Skip ⏭️
         </Button>
@@ -184,11 +206,7 @@ export default function SpaceExplorerGame() {
             {missionCount === 0 ? "🌟 Start Mission" : "➡️ Next Mission"}
           </Button>
         ) : (
-          <Button 
-            onClick={() => {
-              navigate("/kinesthetic2");
-            }}
-          >
+          <Button onClick={() => navigate("/kinesthetic2")}>
             Proceed to Next
           </Button>
         )}
@@ -200,17 +218,12 @@ export default function SpaceExplorerGame() {
         </p>
       )}
 
-      {/* Answer Drop Box */}
       {missionCount < TOTAL_MISSIONS && (
-        <AnswerBox
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
-        >
+        <AnswerBox onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
           {target ? "👉 Drag the correct one here!" : "Press Start to begin 🚀"}
         </AnswerBox>
       )}
 
-      {/* Planets & Sun to Drag */}
       {missionCount < TOTAL_MISSIONS && (
         <BodyContainer>
           {BODIES.map((b) => (

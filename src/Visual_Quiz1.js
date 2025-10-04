@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Replace useHistory with useNavigate
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
+// Styled Components
 const QuizContainer = styled.div`
   margin: 20px;
   padding: 20px;
-  background: linear-gradient(135deg, rgb(166, 243, 243), rgb(244, 180, 250)); 
+  background: linear-gradient(135deg, rgb(166, 243, 243), rgb(244, 180, 250));
   border-radius: 12px;
 `;
 
@@ -18,10 +19,10 @@ const Title = styled.div`
 const QuestionContainer = styled.div`
   margin-bottom: 20px;
   padding: 15px;
-  background: rgba(255, 255, 255, 0.3); /* semi-transparent white */
+  background: rgba(255, 255, 255, 0.3);
   border-radius: 12px;
-  backdrop-filter: blur(8px); /* frosted glass effect */
-  -webkit-backdrop-filter: blur(8px); /* for Safari */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
 
@@ -45,7 +46,7 @@ const SubmitButton = styled.button`
   cursor: pointer;
   font-size: 16px;
   border-radius: 5px;
-  margin-top: 15px; /* Added margin-top for consistency */
+  margin-top: 15px;
   transition: background-color 0.3s;
 
   &:hover {
@@ -53,112 +54,123 @@ const SubmitButton = styled.button`
   }
 `;
 
+// Sample Questions
+const questions = [
+  {
+    question: "1. What is the name of our planet?",
+    options: ["Earth", "Mars", "Venus", "Saturn"],
+    correctAnswer: "Earth",
+  },
+  {
+    question: "2. Which planet is known as the 'Red Planet'?",
+    options: ["Earth", "Mars", "Jupiter", "Mercury"],
+    correctAnswer: "Mars",
+  },
+  {
+    question: "3. What is the name of the star at the center of our solar system?",
+    options: ["The Moon", "The Sun", "The Earth", "The North Star"],
+    correctAnswer: "The Sun",
+  },
+  {
+    question: "4. Which planet is closest to the Sun?",
+    options: ["Mercury", "Earth", "Mars", "Saturn"],
+    correctAnswer: "Mercury",
+  },
+  {
+    question: "5. What is the name of the natural satellite of earth?",
+    options: ["Saturn", "The Moon", "Venus", "Mars"],
+    correctAnswer: "The Moon",
+  },
+];
+
 const Quiz = () => {
-  const navigate = useNavigate(); // Use useNavigate hook instead
+  const navigate = useNavigate();
   const [answers, setAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(2700); // 45 minutes in seconds
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      if (!submitted) handleSubmit();
+      return;
+    }
+    const timerId = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [timeLeft, submitted]);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
 
   const handleChange = (e, index) => {
-    let newAnswers = [...answers];
+    const newAnswers = [...answers];
     newAnswers[index] = e.target.value;
     setAnswers(newAnswers);
   };
 
   const handleSubmit = () => {
+    if (submitted) return;
+
     if (answers.length < questions.length || answers.includes(undefined)) {
       alert("Please answer all questions before submitting the quiz.");
       return;
     }
-    let calculatedScore = 0;
 
+    let calculatedScore = 0;
     questions.forEach((q, index) => {
       if (answers[index] === q.correctAnswer) {
-        calculatedScore += 1; // Add 1 for correct answer
+        calculatedScore += 1;
       }
     });
 
     setScore(calculatedScore);
     setSubmitted(true);
-
-    // Store the score in localStorage
     localStorage.setItem("visualQuizScore1", calculatedScore);
   };
-
-  const questions = [
-    {
-      question: "1. What is the name of our planet?",
-      options: ["Earth", "Mars", "Venus", "Saturn"],
-      correctAnswer: "Earth",
-    },
-    {
-      question: "2. Which planet is known as the 'Red Planet'?",
-      options: ["Earth", "Mars", "Jupiter", "Mercury"],
-      correctAnswer: "Mars",
-    },
-    {
-      question: "3. What is the name of the star at the center of our solar system?",
-      options: ["The Moon", "The Sun", "The Earth", "The North Star"],
-      correctAnswer: "The Sun",
-    },
-    {
-      question: "4. Which planet is closest to the Sun?",
-      options: ["Mercury", "Earth", "Mars", "Saturn"],
-      correctAnswer: "Mercury",
-    },
-    {
-      question: "5. What is the name of the biggest planet in the solar system?",
-      options: ["Saturn", "Jupiter", "Venus", "Mars"],
-      correctAnswer: "Jupiter",
-    },
-  ];
 
   return (
     <QuizContainer>
       <Title>
-        <h1>Solar System Quiz</h1>
+        <h1>Planets Quiz</h1>
       </Title>
 
-      <div>
-        {questions.map((q, index) => (
-          <QuestionContainer key={index}>
-            <Question>{q.question}</Question>
-            {q.options.map((option, i) => (
-              <AnswerOption key={i}>
-                <input
-                  type="radio"
-                  name={`question${index}`}
-                  value={option}
-                  checked={answers[index] === option}
-                  onChange={(e) => handleChange(e, index)}
-                />
-                {option}
-              </AnswerOption>
-            ))}
-          </QuestionContainer>
-        ))}
+      {/* Timer (optional) */}
+      {/* <Timer>Time Left: {formatTime(timeLeft)}</Timer> */}
 
-        <div style={{ display: 'flex', gap: '20px', marginTop: '15px' }}>
-          {/* Skip button - always visible */}
-          <SubmitButton 
-            style={{ background: '#f44336' }}
-            onClick={() => navigate('/visual2')}
-          >
-            Skip ⏭️
-          </SubmitButton>
-          
-          <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
-        </div>
-      </div>
+      {questions.map((q, index) => (
+        <QuestionContainer key={index}>
+          <Question>{q.question}</Question>
+          {q.options.map((option, i) => (
+            <AnswerOption key={i} htmlFor={`q${index}_opt${i}`}>
+              <input
+                id={`q${index}_opt${i}`}
+                type="radio"
+                name={`question${index}`}
+                value={option}
+                checked={answers[index] === option}
+                onChange={(e) => handleChange(e, index)}
+                disabled={submitted || timeLeft <= 0}
+              />
+              {option}
+            </AnswerOption>
+          ))}
+        </QuestionContainer>
+      ))}
 
-      {submitted && (
-        <div>
-          <br></br>
-          <SubmitButton
-            onClick={() => {
-              navigate("/visual2");
-            }}
-          >
+      {!submitted ? (
+        <SubmitButton onClick={handleSubmit} disabled={submitted || timeLeft <= 0}>
+          Submit Quiz
+        </SubmitButton>
+      ) : (
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <h2>Your Score: {score} / {questions.length}</h2>
+          <p>{score === questions.length ? "Perfect score! 🌟" : "Good effort! 🌱"}</p>
+          <SubmitButton onClick={() => navigate("/visual2")}>
             Proceed to Next
           </SubmitButton>
         </div>

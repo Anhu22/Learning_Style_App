@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { ScoreContext } from "./ScoreProvider";
 
 const PageBackground = styled.div`
   background-color: #e0f7fa;
@@ -146,6 +147,7 @@ const Feedback = styled.p`
 `;
 
 const PizzaFractionGame = () => {
+  const { setKinestheticScore } = useContext(ScoreContext);
   const [slices, setSlices] = useState([]);
   const [feedback, setFeedback] = useState("");
   const [isCorrect, setIsCorrect] = useState(null);

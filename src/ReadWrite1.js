@@ -18,15 +18,15 @@ const Title = styled.div`
 `;
 
 const HomeContainer = styled.div`
-    margin:20px;
-    padding:20px;
-    `;
+  margin: 20px;
+  padding: 20px;
+`;
 
 const ButtonContainer = styled.div`
-    text-align:center;
-    margin:20px;
-    padding:20px
-    `;
+  text-align: center;
+  margin: 20px;
+  padding: 20px;
+`;
 
 const Button = styled.button`
   padding: 10px 20px;
@@ -43,36 +43,47 @@ const Button = styled.button`
 `;
 
 const Home = () => {
+  const handleStartClick = () => {
+    // Store start time for Read/Write section
+    localStorage.setItem("readwriteStartTime", Date.now());
+    localStorage.setItem("chosenSection", "readwrite"); // track chosen section
+  };
+
   return (
-    <Wrapper><Title><h1>Welcome to the Solar System!</h1></Title>
-    <HomeContainer>
-          <p>
-              The Solar System is made up of the Sun, eight planets, moons, and many
-              other objects like asteroids and comets. The Sun is the center of the
-              Solar System, and all the planets revolve around it. Earth is the third
-              planet from the Sun, and it’s the only planet known to support life.
-          </p>
+    <Wrapper>
+      <Title>
+        <h1>Welcome to the Solar System!</h1>
+      </Title>
 
-          <p><strong>The Planets:</strong></p>
-          <ul>
-              <li>Mercury - The smallest planet and closest to the Sun.</li>
-              <li>Venus - Known as Earth's twin but very hot!</li>
-              <li>Earth - Our home planet!</li>
-              <li>Mars - The Red Planet, famous for its color.</li>
-              <li>Jupiter - The largest planet in our Solar System.</li>
-              <li>Saturn - Known for its beautiful rings.</li>
-              <li>Uranus - A blue-green planet with a tilted axis.</li>
-              <li>Neptune - The farthest planet from the Sun.</li>
-          </ul>
+      <HomeContainer>
+        <p>
+          The Solar System is made up of the Sun, eight planets, moons, and many
+          other objects like asteroids and comets. The Sun is the center of the
+          Solar System, and all the planets revolve around it. Earth is the third
+          planet from the Sun, and it’s the only planet known to support life.
+        </p>
 
-          <p><strong>Fun Fact:</strong> Did you know that the Sun contains 99.86% of the mass in our Solar System?</p>
+        <p><strong>The Planets:</strong></p>
+        <ul>
+          <li>Mercury - The smallest planet and closest to the Sun.</li>
+          <li>Venus - Known as Earth's twin but very hot!</li>
+          <li>Earth - Our home planet!</li>
+          <li>Mars - The Red Planet, famous for its color.</li>
+          <li>Jupiter - The largest planet in our Solar System.</li>
+          <li>Saturn - Known for its beautiful rings.</li>
+          <li>Uranus - A blue-green planet with a tilted axis.</li>
+          <li>Neptune - The farthest planet from the Sun.</li>
+        </ul>
 
+        <p><strong>Fun Fact:</strong> Did you know that the Sun contains 99.86% of the mass in our Solar System?</p>
       </HomeContainer>
+
       <ButtonContainer>
         <Link to="/rw_quiz1">
-      < Button>Start the Quiz</Button>
+          <Button onClick={handleStartClick}>Start the Quiz</Button>
         </Link>
-    </ButtonContainer></Wrapper>
+      </ButtonContainer>
+    </Wrapper>
   );
 };
 

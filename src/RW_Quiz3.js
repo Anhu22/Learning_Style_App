@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -59,6 +59,11 @@ const Quiz = () => {
   const [answers, setAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [startTime, setStartTime] = useState(null);
+
+  useEffect(() => {
+    setStartTime(Date.now());
+  }, []);
 
   const handleChange = (e, index) => {
     let newAnswers = [...answers];
@@ -79,11 +84,16 @@ const Quiz = () => {
       }
     });
 
+    // Calculate time taken
+    const endTime = Date.now();
+    const timeTaken = Math.floor((endTime - startTime) / 1000); // in seconds
+
     setScore(calculatedScore);
     setSubmitted(true);
 
     // Store score in localStorage for result page
     localStorage.setItem("readQuizScore3", calculatedScore);
+    localStorage.setItem("readQuizTime3", timeTaken);
   };
 
   // ✅ Replaced with L3 real-world application questions
@@ -140,20 +150,20 @@ const Quiz = () => {
       {!submitted && (
         <div style={{ display: 'flex', gap: '20px', marginTop: '15px' }}>
           {/* Skip button - always visible */}
-          <SubmitButton 
+          <SubmitButton
             style={{ background: '#f44336' }}
-            onClick={() => navigate('/visual1')}
+            onClick={() => navigate('/section-result')}
           >
             Skip ⏭️
           </SubmitButton>
-          
+
           <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
         </div>
       )}
       {submitted && (
         <div>
-          <SubmitButton onClick={() => navigate("/visual1")}>
-            Proceed to Next
+          <SubmitButton onClick={() => navigate("/section-result")}>
+            Get the Result
           </SubmitButton>
         </div>
       )}

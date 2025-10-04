@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -44,6 +44,11 @@ const Button = styled.button`
 `;
 
 const Home = () => {
+  // Start the timer when component mounts
+  useEffect(() => {
+    localStorage.setItem("visualStartTime", Date.now());
+  }, []);
+
   return (
     <Wrapper>
       <Title>
