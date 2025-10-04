@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -289,6 +289,13 @@ const TUTORIAL_STEPS = [
 
 // ------------------ Main Component ------------------
 const Kinesthetic2Enhanced = () => {
+  useEffect(() => {
+    const chosenSection = localStorage.getItem("chosenSection");
+    if (chosenSection) {
+      localStorage.setItem(`${chosenSection}StartTime`, Date.now());
+    }
+  }, []);
+
   const [target, setTarget] = useState(null);
   const [scores, setScores] = useState([]);
   const [missionCount, setMissionCount] = useState(0);

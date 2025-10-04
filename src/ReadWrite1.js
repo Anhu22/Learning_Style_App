@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -43,6 +43,13 @@ const Button = styled.button`
 `;
 
 const Home = () => {
+  useEffect(() => {
+    const chosenSection = localStorage.getItem("chosenSection");
+    if (chosenSection) {
+      localStorage.setItem(`${chosenSection}StartTime`, Date.now());
+    }
+  }, []);
+
   return (
     <Wrapper><Title><h1>Welcome to the Solar System!</h1></Title>
     <HomeContainer>

@@ -3,6 +3,8 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./Home";
+import Login from "./Login";
+import Choose from "./Choose";
 import ReadWrite1 from "./ReadWrite1";
 import ReadWrite2 from "./ReadWrite2";
 import ReadWrite3 from "./ReadWrite3";
@@ -29,6 +31,8 @@ import A_Quiz2 from "./Audio_Quiz2";
 import Audio3 from "./Audio3";
 import A_Quiz3 from "./Audio_Quiz3";
 import { ScoreProvider } from "./ScoreProvider";
+import SectionResult from "./SectionResults";
+
 
 function App() {
   return (
@@ -36,7 +40,9 @@ function App() {
       <Router>
         <div className="App">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/choose" element={<Choose/>}/>
             <Route path="/readwrite1" element={<ReadWrite1 />} />
             <Route path="/readwrite2" element={<ReadWrite2 />} />
             <Route path="/readwrite3" element={<ReadWrite3 />} />
@@ -62,6 +68,7 @@ function App() {
             <Route path="/audio3" element={<Audio3 />} />
             <Route path="/a_quiz3" element={<A_Quiz3 />} />
             <Route path="/result" element={<Result />} />
+            <Route path="/section-result" element={<SectionResult />} />
           </Routes>
         </div>
       </Router>

@@ -153,7 +153,7 @@ const Quiz = () => {
         <div>
           <SubmitButton
             onClick={() => {
-              navigate("/kinesthetic1");
+              navigate("/section-result");
             }}
           >
             Proceed to Next

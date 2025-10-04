@@ -1,4 +1,3 @@
-// src/LandingPage.js
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -33,17 +32,33 @@ const StartButton = styled.button`
   }
 `;
 
+const LoginButton = styled.button`
+  padding: 8px 20px;
+  font-size: 14px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 20px;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
 const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleStart = () => {
-    const quizzes = ["/readwrite1"];
+    const quizzes = ["/choose"];
     const randomQuiz = quizzes[Math.floor(Math.random() * quizzes.length)];
     navigate(randomQuiz);
   };
 
   return (
     <Wrapper>
+      {/*<LoginButton onClick={() => navigate('/login')}>Login / Register</LoginButton>*/}
       <Title>
         Welcome
         <br />

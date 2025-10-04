@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 const ResultContainer = styled.div`
   padding: 20px;
@@ -27,12 +28,22 @@ const Result = () => {
   const navigate = useNavigate();
   const [learningStyle, setLearningStyle] = useState("");
   // Get all quiz scores from localStorage
-const readScore = (parseInt(localStorage.getItem("readQuizScore1")) || 0) + (parseInt(localStorage.getItem("readQuizScore2")) || 0) + (parseInt(localStorage.getItem("readQuizScore3")) || 0);
-const visualScore = (parseInt(localStorage.getItem("visualQuizScore1")) || 0) + (parseInt(localStorage.getItem("visualQuizScore2")) || 0) + (parseInt(localStorage.getItem("visualQuizScore3")) || 0);
-const audioScore = (parseInt(localStorage.getItem("audioQuizScore1")) || 0) + (parseInt(localStorage.getItem("audioQuizScore2")) || 0) + (parseInt(localStorage.getItem("audioQuizScore3")) || 0);
-const kinestheticScore = parseInt(localStorage.getItem("kinesthetictotalscore")) || 0;
+  const readScore = (parseInt(localStorage.getItem("readQuizScore1")) || 0) + (parseInt(localStorage.getItem("readQuizScore2")) || 0) + (parseInt(localStorage.getItem("readQuizScore3")) || 0);
+  const visualScore = (parseInt(localStorage.getItem("visualQuizScore1")) || 0) + (parseInt(localStorage.getItem("visualQuizScore2")) || 0) + (parseInt(localStorage.getItem("visualQuizScore3")) || 0);
+  const audioScore = (parseInt(localStorage.getItem("audioQuizScore1")) || 0) + (parseInt(localStorage.getItem("audioQuizScore2")) || 0) + (parseInt(localStorage.getItem("audioQuizScore3")) || 0);
+  const kinestheticScore = parseInt(localStorage.getItem("kinesthetictotalscore")) || 0;
 
-  //const totalScore = readScore + visualScore + audioScore + kinestheticScore;
+  // Get all quiz times from localStorage
+  const readTime = (parseInt(localStorage.getItem("readQuizTime1")) || 0) + (parseInt(localStorage.getItem("readQuizTime2")) || 0) + (parseInt(localStorage.getItem("readQuizTime3")) || 0);
+  const visualTime = (parseInt(localStorage.getItem("visualQuizTime1")) || 0) + (parseInt(localStorage.getItem("visualQuizTime2")) || 0) + (parseInt(localStorage.getItem("visualQuizTime3")) || 0);
+  const audioTime = (parseInt(localStorage.getItem("audioQuizTime1")) || 0) + (parseInt(localStorage.getItem("audioQuizTime2")) || 0) + (parseInt(localStorage.getItem("audioQuizTime3")) || 0);
+  const kinestheticTime = parseInt(localStorage.getItem("kinestheticFlowDuration")) || 0;
+
+  // Get user info from localStorage
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const schoolname = user.schoolname || "";
+  const rollno = user.rollno || "";
+  const password = ""; // Password is not stored in localStorage for security reasons
 
   // Determine the learning style based on highest score
   const scoreMap = {
@@ -46,6 +57,34 @@ const kinestheticScore = parseInt(localStorage.getItem("kinesthetictotalscore"))
     scoreMap[a] > scoreMap[b] ? a : b
   );
 
+  useEffect(() => {
+    // Push results to backend API
+    const pushResults = async () => {
+      try {
+        await axios.post("http://localhost:5000/api/results/save", {
+          schoolname,
+          rollno,
+          password,
+          readWriteScore: readScore,
+          readWriteTime: readTime,
+          visualScore,
+          visualTime,
+          kinestheticScore,
+          kinestheticTime,
+          audioScore,
+          audioTime,
+          predictedStyle,
+        });
+      } catch (error) {
+        console.error("Failed to save results:", error);
+      }
+    };
+
+    if (schoolname && rollno) {
+      pushResults();
+    }
+  }, [schoolname, rollno, password, readScore, readTime, visualScore, visualTime, kinestheticScore, kinestheticTime, audioScore, audioTime, predictedStyle]);
+
   return (
     <ResultContainer>
       <h1>Your Result</h1>
@@ -54,26 +93,11 @@ const kinestheticScore = parseInt(localStorage.getItem("kinesthetictotalscore"))
       <p>🔊 Audio Score: {audioScore}</p>
       <p>🧩 Kinesthetic Score: {kinestheticScore}</p>
       <h2>🎯 Predicted Learning Style: {predictedStyle} Learner</h2>
-    {/*
-<SubmitButton
-  onClick={() => {
-    if (predictedStyle === "Visual") {
-      navigate("/Vsearch");
-    } else if (predictedStyle === "Read") {
-      navigate("/Rsearch");
-    } else {
-      navigate("/search");
-    }
-  }}
->
-  Continue to Search
-</SubmitButton>
-*/}
 
-        <SubmitButton onClick={() => navigate("/")}>
-            Return Home
-          </SubmitButton>
-      </ResultContainer>
+      <SubmitButton onClick={() => navigate("/")}>
+        Return Home
+      </SubmitButton>
+    </ResultContainer>
   );
 };
 

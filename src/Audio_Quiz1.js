@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -13,6 +13,7 @@ const Title = styled.div`
   padding: 10px;
   text-align: center;
 `;
+
 
 const QuestionContainer = styled.div`
   margin-bottom: 20px;
@@ -56,6 +57,26 @@ const Quiz = () => {
   const [answers, setAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      if (!submitted) {
+        handleSubmit();
+      }
+      return;
+    }
+    const timerId = setInterval(() => {
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [timeLeft, submitted]);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   const handleChange = (e, index) => {
     let newAnswers = [...answers];
@@ -128,6 +149,7 @@ const Quiz = () => {
                   value={option}
                   checked={answers[index] === option}
                   onChange={(e) => handleChange(e, index)}
+                  disabled={submitted || timeLeft <= 0}
                 />
                 {option}
               </AnswerOption>
@@ -140,11 +162,12 @@ const Quiz = () => {
           <SubmitButton 
             style={{ background: '#f44336' }}
             onClick={() => navigate('/audio2')}
+            disabled={submitted}
           >
             Skip ⏭️
           </SubmitButton>
           
-          <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
+          <SubmitButton onClick={handleSubmit} disabled={submitted || timeLeft <= 0}>Submit</SubmitButton>
         </div>
       </div>
 

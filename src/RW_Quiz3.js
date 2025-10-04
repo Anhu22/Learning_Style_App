@@ -152,7 +152,7 @@ const Quiz = () => {
       )}
       {submitted && (
         <div>
-          <SubmitButton onClick={() => navigate("/visual1")}>
+          <SubmitButton onClick={() => navigate("/section-result")}>
             Proceed to Next
           </SubmitButton>
         </div>

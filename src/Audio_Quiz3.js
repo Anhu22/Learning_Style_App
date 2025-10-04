@@ -139,18 +139,18 @@ const Quiz = () => {
 
         <div style={{ display: 'flex', gap: '20px', marginTop: '15px' }}>
           {/* Skip button - always visible */}
-          <SubmitButton 
+          <SubmitButton
             style={{ background: '#f44336' }}
-            onClick={() => navigate('/result')}
+            onClick={() => navigate('/section-result')}
           >
             Skip ⏭️
           </SubmitButton>
-          
+
           <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>
         </div>
       {submitted && (
         <div>
-          <SubmitButton onClick={() => navigate("/result")}>
+          <SubmitButton onClick={() => navigate("/section-result")}>
             Get the Result
           </SubmitButton>
         </div>
