@@ -99,15 +99,9 @@ const Choose = () => {
   });
 
   const checkSectionCompletion = (section) => {
-    const score1 = parseInt(localStorage.getItem(`${section}QuizScore1`) || "0", 10);
-    const score2 = parseInt(localStorage.getItem(`${section}QuizScore2`) || "0", 10);
     const score3 = parseInt(localStorage.getItem(`${section}QuizScore3`) || "0", 10);
-
-    const time1 = parseInt(localStorage.getItem(`${section}QuizTime1`) || "0", 10);
-    const time2 = parseInt(localStorage.getItem(`${section}QuizTime2`) || "0", 10);
     const time3 = parseInt(localStorage.getItem(`${section}QuizTime3`) || "0", 10);
-
-    return !(score1 === 0 && score2 === 0 && score3 === 0 && time1 === 0 && time2 === 0 && time3 === 0);
+    return score3 > 0 || time3 > 0;
   };
 
   useEffect(() => {
