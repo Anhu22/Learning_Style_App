@@ -123,7 +123,6 @@ const PizzaFractionGame = () => {
   const [slices, setSlices] = useState([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [quizEnded, setQuizEnded] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes = 300 seconds
   const navigate = useNavigate();
 
   const questions = [
@@ -175,14 +174,7 @@ const PizzaFractionGame = () => {
 
   const currentQuestion = questions[questionIndex];
 
-  useEffect(() => {
-    if (timeLeft <= 0) {
-      handleEndQuiz();
-      return;
-    }
-    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    return () => clearInterval(timer);
-  }, [timeLeft]);
+
 
   const formatTime = (seconds) => {
     const min = Math.floor(seconds / 60);
@@ -217,14 +209,20 @@ const PizzaFractionGame = () => {
 
   localStorage.setItem(`pizzaFractionScore_Q${questionIndex + 1}`, points);
 
-  setTimeout(() => {
-    if (questionIndex < questions.length - 1) {
-      setQuestionIndex(questionIndex + 1);
-      setSlices([]);
-    } else {
-      handleEndQuiz();
-    }
-  }, 1000);
+    // Auto move to next question after 1 second
+    setTimeout(() => {
+      if (questionIndex < questions.length - 1) {
+        setQuestionIndex(questionIndex + 1);
+        setSlices([]);
+      } else {
+        let total = 0;
+        for (let i = 1; i <= questions.length; i++) {
+          total += parseInt(localStorage.getItem(`pizzaFractionScore_Q${i}`)) || 0;
+        }
+        localStorage.setItem("kinesthetictotalscore", total);
+        setQuizEnded(true);
+      }
+    }, 1000);
   };
 
   const handleSkip = () => {

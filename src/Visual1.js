@@ -50,7 +50,6 @@ const Home = () => {
       localStorage.setItem(`${chosenSection}StartTime`, Date.now());
     }
   }, []);
-
   return (
     <Wrapper>
       <Title>

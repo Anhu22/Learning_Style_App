@@ -69,6 +69,13 @@ const CheckboxContainer = styled.div`
   gap: 8px;
 `;
 
+const Checkbox = styled.input`
+  width: 20px;
+  height: 20px;
+  accent-color: #4caf50;
+  cursor: not-allowed;
+`;
+
 const CompletionBadge = styled.div`
   background: ${(props) => (props.completed ? "#4caf50" : "#ccc")};
   color: white;
@@ -100,10 +107,7 @@ const Choose = () => {
     const time2 = parseInt(localStorage.getItem(`${section}QuizTime2`) || "0", 10);
     const time3 = parseInt(localStorage.getItem(`${section}QuizTime3`) || "0", 10);
 
-    const totalScore = score1 + score2 + score3;
-    const totalTime = time1 + time2 + time3;
-
-    return totalScore > 0 || totalTime > 0;
+    return !(score1 === 0 && score2 === 0 && score3 === 0 && time1 === 0 && time2 === 0 && time3 === 0);
   };
 
   useEffect(() => {
@@ -136,7 +140,8 @@ const Choose = () => {
           }}
         >
           <CheckboxContainer>
-            <CompletionBadge completed={completedSections.visual}></CompletionBadge>
+            <CompletionBadge completed={completedSections.visual}>
+            </CompletionBadge>
           </CheckboxContainer>
           Visual Learner
         </Box>
@@ -153,7 +158,8 @@ const Choose = () => {
           }}
         >
           <CheckboxContainer>
-            <CompletionBadge completed={completedSections.audio}></CompletionBadge>
+            <CompletionBadge completed={completedSections.audio}>
+            </CompletionBadge>
           </CheckboxContainer>
           Audio Learner
         </Box>
@@ -170,7 +176,9 @@ const Choose = () => {
           }}
         >
           <CheckboxContainer>
-            <CompletionBadge completed={completedSections.readwrite}></CompletionBadge>
+            
+            <CompletionBadge completed={completedSections.readwrite}>
+            </CompletionBadge>
           </CheckboxContainer>
           Read/Write Learner
         </Box>
@@ -187,12 +195,17 @@ const Choose = () => {
           }}
         >
           <CheckboxContainer>
-            <CompletionBadge completed={completedSections.kinesthetic}></CompletionBadge>
+            
+            <CompletionBadge completed={completedSections.kinesthetic}>
+              
+            </CompletionBadge>
           </CheckboxContainer>
           Kinesthetic Learner
         </Box>
       </BoxContainer>
-      <FinishButton onClick={() => navigate("/result")}>Finish</FinishButton>
+      <FinishButton onClick={() => navigate("/result")}>
+        Finish
+      </FinishButton>
     </Container>
   );
 };

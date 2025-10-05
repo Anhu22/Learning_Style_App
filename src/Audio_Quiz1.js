@@ -14,7 +14,6 @@ const Title = styled.div`
   text-align: center;
 `;
 
-
 const QuestionContainer = styled.div`
   margin-bottom: 20px;
   padding: 15px;
@@ -136,6 +135,8 @@ const Quiz = () => {
       <Title>
         <h1>Solar System Quiz</h1>
       </Title>
+
+      <Timer>Time Left: {formatTime(timeLeft)}</Timer>
 
       <div>
         {questions.map((q, index) => (
