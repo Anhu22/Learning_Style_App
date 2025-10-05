@@ -136,8 +136,6 @@ const Quiz = () => {
         <h1>Solar System Quiz</h1>
       </Title>
 
-      <Timer>Time Left: {formatTime(timeLeft)}</Timer>
-
       <div>
         {questions.map((q, index) => (
           <QuestionContainer key={index}>
@@ -159,14 +157,14 @@ const Quiz = () => {
         ))}
 
         <div style={{ display: 'flex', gap: '20px', marginTop: '15px' }}>
-          {/* Skip button - always visible */}
+          {/* Skip button - always visible 
           <SubmitButton 
             style={{ background: '#f44336' }}
             onClick={() => navigate('/audio2')}
             disabled={submitted}
           >
             Skip ⏭️
-          </SubmitButton>
+          </SubmitButton>*/}
           
           <SubmitButton onClick={handleSubmit} disabled={submitted || timeLeft <= 0}>Submit</SubmitButton>
         </div>

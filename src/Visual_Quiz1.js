@@ -163,13 +163,11 @@ const Quiz = () => {
       ))}
 
       {!submitted ? (
-        <SubmitButton onClick={handleSubmit} disabled={submitted || timeLeft <= 0}>
+        <SubmitButton onClick={handleSubmit}>
           Submit Quiz
         </SubmitButton>
       ) : (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <h2>Your Score: {score} / {questions.length}</h2>
-          <p>{score === questions.length ? "Perfect score! 🌟" : "Good effort! 🌱"}</p>
+        <div>
           <SubmitButton onClick={() => navigate("/visual2")}>
             Proceed to Next
           </SubmitButton>

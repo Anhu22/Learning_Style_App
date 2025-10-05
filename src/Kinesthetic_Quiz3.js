@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { ScoreContext } from "./ScoreProvider";
@@ -110,19 +110,12 @@ const ProgressBarFill = styled.div`
   transition: width 0.5s ease-in-out;
 `;
 
-const TimerText = styled.div`
-  text-align: center;
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #d32f2f;
-`;
-
 const PizzaFractionGame = () => {
   const { setKinestheticScore } = useContext(ScoreContext);
   const [slices, setSlices] = useState([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [quizEnded, setQuizEnded] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
   const navigate = useNavigate();
 
   const questions = [
@@ -183,7 +176,8 @@ const PizzaFractionGame = () => {
   };
 
   const handleAddSlice = (type) => {
-    if (slices.length < 4) {
+    // allow up to 8 slices (questions use denominators like 8 and 12)
+    if (slices.length < 8) {
       setSlices([...slices, sliceImages[type]]);
     }
   };
@@ -236,7 +230,7 @@ const PizzaFractionGame = () => {
     }
   };
 
-  const handleEndQuiz = () => {
+  const handleEndQuiz = useCallback(() => {
     let total = 0;
     for (let i = 1; i <= questions.length; i++) {
       total += parseInt(localStorage.getItem(`pizzaFractionScore_Q${i}`)) || 0;
@@ -245,9 +239,20 @@ const PizzaFractionGame = () => {
     setKinestheticScore(total);
     localStorage.setItem("kinestheticQuizScore3", total);
     setQuizEnded(true);
-  };
+  }, [questions.length, setKinestheticScore]);
 
   const progressPercent = ((questionIndex + 1) / questions.length) * 100;
+
+  // Countdown timer: decrement every second and end quiz when it reaches zero.
+  useEffect(() => {
+    if (quizEnded) return;
+    if (timeLeft <= 0) {
+      handleEndQuiz();
+      return;
+    }
+    const timerId = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+    return () => clearInterval(timerId);
+  }, [timeLeft, quizEnded, handleEndQuiz]);
 
   return (
     <PageBackground>
@@ -257,8 +262,6 @@ const PizzaFractionGame = () => {
             <ProgressBarWrapper>
               <ProgressBarFill width={progressPercent} />
             </ProgressBarWrapper>
-
-            <TimerText>⏳ Time Left: {formatTime(timeLeft)}</TimerText>
 
             <Title>{currentQuestion.title}</Title>
             <Instruction>{currentQuestion.instruction}</Instruction>

@@ -55,7 +55,7 @@ const Home = () => {
         <iframe
           width="560"
           height="315"
-          src="https://www.youtube.com/embed/m9lcW6XdYV8?start=97"
+          src="https://www.youtube.com/embed/m9lcW6XdYV8?start=00"
           title="Fractions in Real Life for Kids"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

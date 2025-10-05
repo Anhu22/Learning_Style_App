@@ -15,14 +15,6 @@ const Title = styled.div`
   text-align: center;
 `;
 
-const Timer = styled.div`
-  font-size: 18px;
-  font-weight: bold;
-  color: #ff6347;
-  text-align: center;
-  margin-bottom: 15px;
-`;
-
 const QuestionContainer = styled.div`
   margin-bottom: 20px;
   padding: 15px;
@@ -102,27 +94,6 @@ const Quiz = () => {
     },
   ];
 
-  useEffect(() => {
-    if (timeLeft <= 0) {
-      if (!submitted) {
-        handleSubmit();
-      }
-      return;
-    }
-    const timerId = setInterval(() => {
-      setTimeLeft((prevTime) => prevTime - 1);
-    }, 1000);
-    return () => clearInterval(timerId);
-  }, [timeLeft, submitted]);
-
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m.toString().padStart(2, "0")}:${s
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
   const handleChange = (e, index) => {
     const newAnswers = [...answers];
     newAnswers[index] = e.target.value;
@@ -158,8 +129,6 @@ const Quiz = () => {
         <h1>🌿 Plants Quiz</h1>
       </Title>
 
-      <Timer>Time Left: {formatTime(timeLeft)}</Timer>
-
       {questions.map((q, index) => (
         <QuestionContainer key={index}>
           <Question>{q.question}</Question>
@@ -181,10 +150,10 @@ const Quiz = () => {
 
       {!submitted ? (
         <div style={{ display: "flex", gap: "20px", marginTop: "15px" }}>
-          {/* Skip button */}
+          {/* Skip button 
           <SubmitButton style={{ background: "#f44336" }} onClick={handleSkip}>
             Skip ⏭️
-          </SubmitButton>
+          </SubmitButton>*/}
 
           <SubmitButton
             onClick={handleSubmit}

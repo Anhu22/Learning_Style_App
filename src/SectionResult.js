@@ -29,10 +29,10 @@ const SectionResult = () => {
   const chosenSection = localStorage.getItem("chosenSection");
   const [flowTimeTaken, setFlowTimeTaken] = useState("");
 
-  // Only run effect if chosenSection exists
   useEffect(() => {
     if (!chosenSection) return;
 
+    // ⏱️ Calculate total time for the flow
     const flowStartTime = localStorage.getItem(`${chosenSection}StartTime`);
     if (flowStartTime) {
       const endTime = Date.now();
@@ -42,6 +42,26 @@ const SectionResult = () => {
       setFlowTimeTaken(`${minutes}m ${seconds}s`);
       localStorage.setItem(`${chosenSection}FlowDuration`, durationMs.toString());
     }
+
+    // 🧮 Calculate total score and total time for this section
+    const score1 = parseInt(localStorage.getItem(`${chosenSection}QuizScore1`) || "0", 10);
+    const score2 = parseInt(localStorage.getItem(`${chosenSection}QuizScore2`) || "0", 10);
+    const score3 = parseInt(localStorage.getItem(`${chosenSection}QuizScore3`) || "0", 10);
+    const totalScore = score1 + score2 + score3;
+
+    const time1 = parseInt(localStorage.getItem(`${chosenSection}QuizTime1`) || "0", 10);
+    const time2 = parseInt(localStorage.getItem(`${chosenSection}QuizTime2`) || "0", 10);
+    const time3 = parseInt(localStorage.getItem(`${chosenSection}QuizTime3`) || "0", 10);
+    const totalTime = time1 + time2 + time3;
+
+    // 💾 Save the final result for this section
+    localStorage.setItem(`${chosenSection}TotalScore`, totalScore.toString());
+    localStorage.setItem(`${chosenSection}TotalTime`, totalTime.toString());
+
+    // 💾 Also save global "final" results for backend sync
+    localStorage.setItem("finalScore", totalScore.toString());
+    localStorage.setItem("finalTime", totalTime.toString());
+    localStorage.setItem("lastSection", chosenSection);
   }, [chosenSection]);
 
   if (!chosenSection) {
@@ -55,20 +75,15 @@ const SectionResult = () => {
     );
   }
 
-  // Calculate total score from all quizzes
-  const score1 = parseInt(localStorage.getItem(`${chosenSection}QuizScore1`) || "0", 10);
-  const score2 = parseInt(localStorage.getItem(`${chosenSection}QuizScore2`) || "0", 10);
-  const score3 = parseInt(localStorage.getItem(`${chosenSection}QuizScore3`) || "0", 10);
-  const totalScore = score1 + score2 + score3;
-
-  // Calculate total time from individual quizzes
-  const time1 = parseInt(localStorage.getItem(`${chosenSection}QuizTime1`) || "0", 10);
-  const time2 = parseInt(localStorage.getItem(`${chosenSection}QuizTime2`) || "0", 10);
-  const time3 = parseInt(localStorage.getItem(`${chosenSection}QuizTime3`) || "0", 10);
-  const totalTime = time1 + time2 + time3; // in seconds
-
   // Capitalize first letter for display
   const displaySection = chosenSection.charAt(0).toUpperCase() + chosenSection.slice(1);
+
+  const totalScore = localStorage.getItem(`${chosenSection}TotalScore`) || 0;
+  localStorage.setItem(`${chosenSection}TotalScore`, totalScore.toString());
+
+  const totalTime = localStorage.getItem(`${chosenSection}TotalTime`) || 0;
+  localStorage.setItem(`${chosenSection}TotalTime`, totalTime.toString());
+
 
   return (
     <ResultContainer>

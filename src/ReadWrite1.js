@@ -49,6 +49,19 @@ const Home = () => {
       localStorage.setItem(`${chosenSection}StartTime`, Date.now());
     }
   }, []);
+  
+  // Handler for the Start button: store the chosen section and start time.
+  // Navigation is performed by the surrounding <Link/> so this only records state.
+  const handleStartClick = () => {
+    try {
+      localStorage.setItem("chosenSection", "readwrite");
+      localStorage.setItem("readwriteStartTime", Date.now().toString());
+    } catch (e) {
+      // localStorage can fail in some environments; fail silently but log for debugging
+      // eslint-disable-next-line no-console
+      console.error('Failed to set start time in localStorage', e);
+    }
+  };
   return (
     <Wrapper>
       <Title>
