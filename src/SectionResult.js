@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 const ResultContainer = styled.div`
   padding: 20px;
@@ -62,6 +63,47 @@ const SectionResult = () => {
     localStorage.setItem("finalScore", totalScore.toString());
     localStorage.setItem("finalTime", totalTime.toString());
     localStorage.setItem("lastSection", chosenSection);
+
+    // 📤 Send section results to backend
+    const saveSectionResults = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user")) || {};
+        const { schoolname, rollno } = user;
+
+        if (!rollno) {
+          console.warn("No user logged in, skipping save to DB");
+          return;
+        }
+
+        // Map section to field names
+        const fieldMap = {
+          read: { score: "readWriteScore", time: "readWriteTime" },
+          visual: { score: "visualScore", time: "visualTime" },
+          audio: { score: "audioScore", time: "audioTime" },
+          kinesthetic: { score: "kinestheticScore", time: "kinestheticTime" },
+        };
+
+        const fields = fieldMap[chosenSection];
+        if (!fields) {
+          console.error(`Unknown section: ${chosenSection}`);
+          return;
+        }
+
+        const data = {
+          schoolname,
+          rollno,
+          [fields.score]: totalScore,
+          [fields.time]: totalTime,
+        };
+
+        const response = await axios.post("http://localhost:5000/api/results", data);
+        console.log("Section results saved:", response.data);
+      } catch (error) {
+        console.error("Failed to save section results:", error);
+      }
+    };
+
+    saveSectionResults();
   }, [chosenSection]);
 
   if (!chosenSection) {
