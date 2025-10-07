@@ -151,7 +151,7 @@ const Quiz = () => {
       <br></br>
       {submitted && (
         <div>
-          <p>Your score: {score}/5</p>
+          {/*<p>Your score: {score}/5</p>*/}
           <SubmitButton
             onClick={() => {
               navigate("/section-result");

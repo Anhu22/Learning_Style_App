@@ -292,12 +292,12 @@ const PizzaFractionGame = () => {
                 justifyContent: "center",
               }}
             >
-              <SubmitButton
+              {/*<SubmitButton
                 style={{ background: "#f44336" }}
                 onClick={handleSkip}
               >
                 Skip ⏭️
-              </SubmitButton>
+              </SubmitButton>*/}
 
               <SubmitButton onClick={handleSubmit}>✅ Submit Answer</SubmitButton>
             </div>

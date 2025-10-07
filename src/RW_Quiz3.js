@@ -92,8 +92,8 @@ const Quiz = () => {
     setSubmitted(true);
 
     // Store score in localStorage for result page
-    localStorage.setItem("readQuizScore3", calculatedScore);
-    localStorage.setItem("readQuizTime3", timeTaken);
+    localStorage.setItem("readwriteQuizScore3", calculatedScore);
+    {/*localStorage.setItem("readQuizTime3", timeTaken);*/}
   };
 
   // ✅ Replaced with L3 real-world application questions
@@ -162,6 +162,7 @@ const Quiz = () => {
       )}
       {submitted && (
         <div>
+          <p>Your score: {score}/5</p>
           <SubmitButton onClick={() => navigate("/section-result")}>
             Get the Result
           </SubmitButton>

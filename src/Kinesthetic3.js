@@ -348,12 +348,12 @@ const PizzaFractionGame = () => {
 
               <ButtonRow>
                 <SubmitButton onClick={handleSubmit}>✅ Submit Answer</SubmitButton>
-                <ActionButton 
+                {/*<ActionButton 
                   style={{ background: '#f44336' }}
                   onClick={handleNext}
                 >
                   Skip ⏭️
-                </ActionButton>
+                </ActionButton>*/}
               </ButtonRow>
 
               {feedback && <Feedback correct={isCorrect}>{feedback}</Feedback>}

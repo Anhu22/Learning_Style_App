@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 
 const ResultContainer = styled.div`
   padding: 20px;
@@ -29,10 +30,10 @@ const SectionResult = () => {
   const chosenSection = localStorage.getItem("chosenSection");
   const [flowTimeTaken, setFlowTimeTaken] = useState("");
 
-  // Only run effect if chosenSection exists
   useEffect(() => {
     if (!chosenSection) return;
 
+    // ⏱️ Calculate total time for the flow
     const flowStartTime = localStorage.getItem(`${chosenSection}StartTime`);
     if (flowStartTime) {
       const endTime = Date.now();
@@ -42,6 +43,72 @@ const SectionResult = () => {
       setFlowTimeTaken(`${minutes}m ${seconds}s`);
       localStorage.setItem(`${chosenSection}FlowDuration`, durationMs.toString());
     }
+
+    // 🧮 Calculate total score and total time for this section
+    const score1 = parseInt(localStorage.getItem(`${chosenSection}QuizScore1`) || "0", 10);
+    const score2 = parseInt(localStorage.getItem(`${chosenSection}QuizScore2`) || "0", 10);
+    const score3 = parseInt(localStorage.getItem(`${chosenSection}QuizScore3`) || "0", 10);
+    const totalScore = score1 + score2 + score3;
+
+    const time1 = parseInt(localStorage.getItem(`${chosenSection}QuizTime1`) || "0", 10);
+    const time2 = parseInt(localStorage.getItem(`${chosenSection}QuizTime2`) || "0", 10);
+    const time3 = parseInt(localStorage.getItem(`${chosenSection}QuizTime3`) || "0", 10);
+    const totalTime = time1 + time2 + time3;
+
+    // 💾 Save the final result for this section
+    localStorage.setItem(`${chosenSection}TotalScore`, totalScore.toString());
+    localStorage.setItem(`${chosenSection}TotalTime`, totalTime.toString());
+    // Special-case: Result.js expects read totals under readTotalScore/readTotalTime
+    if (chosenSection === 'readwrite') {
+      localStorage.setItem('readTotalScore', totalScore.toString());
+      localStorage.setItem('readTotalTime', totalTime.toString());
+    }
+
+    // 💾 Also save global "final" results for backend sync
+    localStorage.setItem("finalScore", totalScore.toString());
+    localStorage.setItem("finalTime", totalTime.toString());
+    localStorage.setItem("lastSection", chosenSection);
+
+    // 📤 Send section results to backend
+    const saveSectionResults = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user")) || {};
+        const { schoolname, rollno } = user;
+
+        if (!rollno) {
+          console.warn("No user logged in, skipping save to DB");
+          return;
+        }
+
+        // Map section to field names
+        const fieldMap = {
+          read: { score: "readWriteScore", time: "readWriteTime" },
+          visual: { score: "visualScore", time: "visualTime" },
+          audio: { score: "audioScore", time: "audioTime" },
+          kinesthetic: { score: "kinestheticScore", time: "kinestheticTime" },
+        };
+
+        const fields = fieldMap[chosenSection];
+        if (!fields) {
+          console.error(`Unknown section: ${chosenSection}`);
+          return;
+        }
+
+        const data = {
+          schoolname,
+          rollno,
+          [fields.score]: totalScore,
+          [fields.time]: totalTime,
+        };
+
+        const response = await axios.post("http://localhost:5000/api/results", data);
+        console.log("Section results saved:", response.data);
+      } catch (error) {
+        console.error("Failed to save section results:", error);
+      }
+    };
+
+    saveSectionResults();
   }, [chosenSection]);
 
   if (!chosenSection) {
@@ -55,40 +122,15 @@ const SectionResult = () => {
     );
   }
 
-  // Calculate total score from all quizzes
-  let score1 = 0;
-  let score2 = 0;
-  let score3 = 0;
-  let totalScore = 0;
-  let time1 = 0;
-  let time2 = 0;
-  let time3 = 0;
-  let totalTime = 0;
-
-  if (chosenSection === "readwrite") {
-    score1 = parseInt(localStorage.getItem("readQuizScore1") || "0", 10);
-    score2 = parseInt(localStorage.getItem("readQuizScore2") || "0", 10);
-    score3 = parseInt(localStorage.getItem("readQuizScore3") || "0", 10);
-    totalScore = score1 + score2 + score3;
-
-    time1 = parseInt(localStorage.getItem("readQuizTime1") || "0", 10);
-    time2 = parseInt(localStorage.getItem("readQuizTime2") || "0", 10);
-    time3 = parseInt(localStorage.getItem("readQuizTime3") || "0", 10);
-    totalTime = time1 + time2 + time3; // in seconds
-  } else {
-    score1 = parseInt(localStorage.getItem(`${chosenSection}QuizScore1`) || "0", 10);
-    score2 = parseInt(localStorage.getItem(`${chosenSection}QuizScore2`) || "0", 10);
-    score3 = parseInt(localStorage.getItem(`${chosenSection}QuizScore3`) || "0", 10);
-    totalScore = score1 + score2 + score3;
-
-    time1 = parseInt(localStorage.getItem(`${chosenSection}QuizTime1`) || "0", 10);
-    time2 = parseInt(localStorage.getItem(`${chosenSection}QuizTime2`) || "0", 10);
-    time3 = parseInt(localStorage.getItem(`${chosenSection}QuizTime3`) || "0", 10);
-    totalTime = time1 + time2 + time3; // in seconds
-  }
-
   // Capitalize first letter for display
   const displaySection = chosenSection.charAt(0).toUpperCase() + chosenSection.slice(1);
+
+  const totalScore = localStorage.getItem(`${chosenSection}TotalScore`) || 0;
+  localStorage.setItem(`${chosenSection}TotalScore`, totalScore.toString());
+
+  const totalTime = localStorage.getItem(`${chosenSection}TotalTime`) || 0;
+  localStorage.setItem(`${chosenSection}TotalTime`, totalTime.toString());
+
 
   return (
     <ResultContainer>

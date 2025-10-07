@@ -141,7 +141,8 @@ const KinestheticPhotosynthesis = () => {
   return (
     <Wrapper>
       <h1>🌿 Photosynthesis Drag & Drop</h1>
-      <Timer>⏳ Time Left: {formatTime(timeLeft)}</Timer>
+      {/*<Timer>⏳ Time Left: {formatTime(timeLeft)}</Timer>*/}
+      <p>Drag the labels from the word bank to their correct positions on the diagram.</p>
 
       <DragDropContext onDragEnd={onDragEnd}>
         <Diagram>
@@ -253,7 +254,7 @@ const KinestheticPhotosynthesis = () => {
 
       {/* Action buttons */}
       <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
-        <button
+        {/*<button
           style={{
             padding: "10px 20px",
             fontSize: "16px",
@@ -266,7 +267,7 @@ const KinestheticPhotosynthesis = () => {
           onClick={() => navigate("/kinesthetic3")}
         >
           Skip ⏭️
-        </button>
+        </button>*/}
 
         {allPlaced && (
           <button

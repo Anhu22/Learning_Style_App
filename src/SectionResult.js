@@ -58,6 +58,11 @@ const SectionResult = () => {
     // 💾 Save the final result for this section
     localStorage.setItem(`${chosenSection}TotalScore`, totalScore.toString());
     localStorage.setItem(`${chosenSection}TotalTime`, totalTime.toString());
+    // Special-case: Result.js expects read totals under readTotalScore/readTotalTime
+    if (chosenSection === 'readwrite') {
+      localStorage.setItem('readTotalScore', totalScore.toString());
+      localStorage.setItem('readTotalTime', totalTime.toString());
+    }
 
     // 💾 Also save global "final" results for backend sync
     localStorage.setItem("finalScore", totalScore.toString());

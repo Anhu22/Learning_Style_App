@@ -136,8 +136,8 @@ const Quiz = () => {
 
     setScore(calculatedScore);
     setSubmitted(true);
-    localStorage.setItem("readQuizScore2", calculatedScore);
-    localStorage.setItem("readQuizTime2", timeTaken);
+    localStorage.setItem("readwriteQuizScore2", calculatedScore);
+    {/*localStorage.setItem("readwriteQuizTime2", timeTaken);*/}
   };
 
   return (
@@ -178,6 +178,7 @@ const Quiz = () => {
         </div>
       ) : (
         <div>
+          <p>Your score: {score}/5</p>
           <SubmitButton onClick={() => navigate("/readwrite3")}>
             Proceed to Next
           </SubmitButton>

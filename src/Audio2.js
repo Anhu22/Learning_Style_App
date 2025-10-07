@@ -132,7 +132,7 @@ By understanding how each part works, we can explain why plants are so important
   return (
     <Wrapper>
       <Title>
-        <h1> Let's Learn About Solar System</h1>
+        <h1> Let's Learn About Plants</h1>
       </Title>
 
       <AudioContainer>

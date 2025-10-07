@@ -112,7 +112,7 @@ const Quiz = () => {
     setSubmitted(true);
 
     // After completing the read questionnaire and calculating the score
-    localStorage.setItem("readQuizScore1", calculatedScore);
+    localStorage.setItem("readwriteQuizScore1", calculatedScore);
   };
 
   const questions = [
@@ -186,6 +186,7 @@ const Quiz = () => {
       <br></br>
       {submitted && (
         <div>
+          <p>Your score: {score}/5</p>
           <SubmitButton
             onClick={() => {
               navigate("/readwrite2");

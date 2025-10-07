@@ -56,7 +56,7 @@ function App() {
             <Route path="/visual3" element={<Visual3 />} />
             <Route path="/vquiz3" element={<Visual_Quiz3 />} />
             <Route path="/kinesthetic1" element={<Kinesthetic1 />} />
-            <Route path="/kinesthetic2" element={<Kinesthetic2 />} />
+            <Route path="/kinesthetic2" element={<Kinesthetic2/>} />
             <Route path="/kinesthetic3" element={<Kinesthetic3 />} />
             <Route path="/kinesthetic_quiz1" element={<Kinesthetic_Quiz1 />} />
              <Route path="/kinesthetic_quiz2" element={<Kinesthetic_Quiz2 />} />

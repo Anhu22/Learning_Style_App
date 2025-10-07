@@ -1,8 +1,7 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { ScoreContext } from "./ScoreProvider";
 
 // 🌱 Styled Components
 const Wrapper = styled.div`
@@ -16,16 +15,28 @@ const Wrapper = styled.div`
 
 const Diagram = styled.div`
   position: relative;
-  background: url("/image/Photosynthesis.png") no-repeat center/contain;
-  width: 600px;
-  height: 450px;
+  background: url("https://www.shutterstock.com/image-vector/diagram-showing-process-photosynthesis-illustration-260nw-563007307.jpg")
+    no-repeat;
+  width: 400px;
+  height: 350px;
+  display: block;
+  margin: 20px auto;
+  background-position: center center;
+  background-size: contain;
+`;
+
+const Container = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 `;
 
 const DropZone = styled.div`
   position: absolute;
-  width: 140px;
-  height: 70px;
+  width: 70px;
+  height: 30px;
   border: 3px dashed #444;
   border-radius: 50%;
   display: flex;
@@ -36,258 +47,201 @@ const DropZone = styled.div`
   background: #fff;
 `;
 
-const WordBank = styled.div`
-  display: flex;
-  gap: 15px;
-  margin-top: 20px;
-  flex-wrap: wrap;
+const Item = styled.div`
+  padding: 10px 15px;
+  margin: 8px 0;
+  font-size: 16px;
+  align-items: center;
   justify-content: center;
 `;
 
 const Word = styled.div`
-  padding: 10px 15px;
+  padding: 5px 10px;
   background: #fff;
   border: 2px solid #333;
   border-radius: 8px;
   cursor: grab;
 `;
 
-const Timer = styled.div`
-  font-size: 20px;
-  font-weight: bold;
-  margin: 10px;
-  color: #333;
+const SubmitButton = styled.button`
+  margin-top: 30px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #43a047;
+    transform: scale(1.05);
+  }
 `;
 
-// 📦 Initial draggable words
-const initialWords = ["Sunlight", "Water", "Oxygen", "Carbon dioxide", "Sugars"];
-
-// 📦 Drop zone ids
-const dropZoneIds = ["sunlight", "water", "oxygen", "carbon", "sugar"];
+const ProceedButton = styled(SubmitButton)`
+  background-color: #43a047;
+  &:hover {
+    background-color: #2e7d32;
+  }
+`;
 
 const KinestheticPhotosynthesis = () => {
-  const { setKinestheticScore } = useContext(ScoreContext);
-  const navigate = useNavigate();
-  const [bank, setBank] = useState(initialWords);
+  const initialWords = ["Sunlight", "Water"];
   const [zones, setZones] = useState({
     sunlight: null,
     water: null,
-    oxygen: null,
-    carbon: null,
-    sugar: null,
   });
 
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+  const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
 
-  // Timer logic
-  useEffect(() => {
-    if (timeLeft <= 0) {
-      calculateScore();
-      navigate("/kinesthetic3");
-      return;
-    }
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [timeLeft, navigate]);
-
-  // Format mm:ss
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s < 10 ? "0" : ""}${s}`;
-  };
-
+  // 🧩 Handle drag-and-drop logic
   const onDragEnd = (result) => {
-    if (!result.destination) return;
+    const { destination, draggableId } = result;
+    if (!destination) return;
 
-    const { source, destination, draggableId } = result;
-
-    // From bank → to zone
-    if (source.droppableId === "bank" && dropZoneIds.includes(destination.droppableId)) {
-      setBank(bank.filter((w) => w !== draggableId));
-      setZones({ ...zones, [destination.droppableId]: draggableId });
-    }
-
-    // From zone → back to bank
-    else if (dropZoneIds.includes(source.droppableId) && destination.droppableId === "bank") {
-      setZones({ ...zones, [source.droppableId]: null });
-      setBank([...bank, draggableId]);
-    }
+    setZones((prev) => ({
+      ...prev,
+      [destination.droppableId]: draggableId,
+    }));
   };
 
-  const allPlaced = Object.values(zones).every((z) => z !== null);
+  // ✅ Check if all drop zones are filled
+  const allPlaced = Object.values(zones).every((val) => val !== null);
 
-  const calculateScore = () => {
-    let newScore = 0;
-    const correctAnswers = {
-      sunlight: "Sunlight",
-      water: "Water",
-      oxygen: "Oxygen",
-      carbon: "Carbon dioxide",
-      sugar: "Sugars",
-    };
+  const handleSubmit = () => {
+    alert("✅ Well done! You’ve successfully completed the activity!");
+    setSubmitted(true);
+  };
 
-    for (const [key, value] of Object.entries(zones)) {
-      if (value === correctAnswers[key]) {
-        newScore += 1;
-      }
-    }
-    setKinestheticScore(newScore);
-    localStorage.setItem("kinestheticQuizScore2", newScore);
+  const handleProceed = () => {
+    navigate("/kinesthetic_quiz2"); // 👉 Change this to your next route
   };
 
   return (
     <Wrapper>
-      <h1>🌿 Photosynthesis Drag & Drop</h1>
-      <Timer>⏳ Time Left: {formatTime(timeLeft)}</Timer>
+      <h1>🌿 Photosynthesis</h1>
+      <Container>
+        {!submitted ? (
+          <>
+            <Item>
+              <h2 style={{ textAlign: "center" }}>Instruction :-</h2>
+              <strong>Step 1:</strong> Read the labels of the given Image Carefully.
+              <br />
+              <strong>Step 2:</strong> Click on the button below to start your activity.
+              <br />
+              <strong>Step 3:</strong> Drag and drop the labels to their correct positions on the diagram.
+              <br />
+              <strong>Step 4:</strong> Once you are satisfied with your arrangement, click the "Submit" button.
+              <br />
+              Good luck and have fun learning about photosynthesis!
+            </Item>
+            <Diagram></Diagram>
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Diagram>
-          {/* Drop Zones */}
-          <Droppable droppableId="sunlight">
-            {(provided) => (
-              <DropZone ref={provided.innerRef} {...provided.droppableProps} style={{ top: "100px", left: "80px" }}>
-                {zones.sunlight && (
-                  <Draggable draggableId={zones.sunlight} index={0}>
-                    {(provided) => (
-                      <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                        {zones.sunlight}
-                      </Word>
-                    )}
-                  </Draggable>
-                )}
-                {provided.placeholder}
-              </DropZone>
-            )}
-          </Droppable>
+            <h2 style={{ textAlign: "center", marginTop: "20px" }}>
+              Practice Before Starting The Activity
+            </h2>
 
-          <Droppable droppableId="carbon">
-            {(provided) => (
-              <DropZone ref={provided.innerRef} {...provided.droppableProps} style={{ top: "220px", left: "55px" }}>
-                {zones.carbon && (
-                  <Draggable draggableId={zones.carbon} index={0}>
-                    {(provided) => (
-                      <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                        {zones.carbon}
-                      </Word>
-                    )}
-                  </Draggable>
-                )}
-                {provided.placeholder}
-              </DropZone>
-            )}
-          </Droppable>
-
-          <Droppable droppableId="water">
-            {(provided) => (
-              <DropZone ref={provided.innerRef} {...provided.droppableProps} style={{ top: "340px", left: "60px" }}>
-                {zones.water && (
-                  <Draggable draggableId={zones.water} index={0}>
-                    {(provided) => (
-                      <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                        {zones.water}
-                      </Word>
-                    )}
-                  </Draggable>
-                )}
-                {provided.placeholder}
-              </DropZone>
-            )}
-          </Droppable>
-
-          <Droppable droppableId="oxygen">
-            {(provided) => (
-              <DropZone ref={provided.innerRef} {...provided.droppableProps} style={{ top: "120px", left: "440px" }}>
-                {zones.oxygen && (
-                  <Draggable draggableId={zones.oxygen} index={0}>
-                    {(provided) => (
-                      <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                        {zones.oxygen}
-                      </Word>
-                    )}
-                  </Draggable>
-                )}
-                {provided.placeholder}
-              </DropZone>
-            )}
-          </Droppable>
-
-          <Droppable droppableId="sugar">
-            {(provided) => (
-              <DropZone ref={provided.innerRef} {...provided.droppableProps} style={{ top: "280px", left: "460px" }}>
-                {zones.sugar && (
-                  <Draggable draggableId={zones.sugar} index={0}>
-                    {(provided) => (
-                      <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                        {zones.sugar}
-                      </Word>
-                    )}
-                  </Draggable>
-                )}
-                {provided.placeholder}
-              </DropZone>
-            )}
-          </Droppable>
-        </Diagram>
-
-        {/* Word Bank */}
-        <Droppable droppableId="bank" direction="horizontal">
-          {(provided) => (
-            <WordBank ref={provided.innerRef} {...provided.droppableProps}>
-              {bank.map((word, index) => (
-                <Draggable key={word} draggableId={word} index={index}>
+            {/* ✅ Drag and Drop Area */}
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Diagram>
+                {/* Drop Zones */}
+                <Droppable droppableId="sunlight">
                   {(provided) => (
-                    <Word ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                      {word}
-                    </Word>
+                    <DropZone
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      style={{ top: "75px", left: "65px" }}
+                    >
+                      {zones.sunlight && (
+                        <Draggable draggableId={zones.sunlight} index={0}>
+                          {(provided) => (
+                            <Word
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              {zones.sunlight}
+                            </Word>
+                          )}
+                        </Draggable>
+                      )}
+                      {provided.placeholder}
+                    </DropZone>
                   )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </WordBank>
-          )}
-        </Droppable>
-      </DragDropContext>
+                </Droppable>
 
-      {/* Action buttons */}
-      <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>
-        <button
-          style={{
-            padding: "10px 20px",
-            fontSize: "16px",
-            background: "#f44336",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
-          onClick={() => navigate("/kinesthetic3")}
-        >
-          Skip ⏭️
-        </button>
+                <Droppable droppableId="water">
+                  {(provided) => (
+                    <DropZone
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      style={{ top: "240px", left: "50px" }}
+                    >
+                      {zones.water && (
+                        <Draggable draggableId={zones.water} index={0}>
+                          {(provided) => (
+                            <Word
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              {zones.water}
+                            </Word>
+                          )}
+                        </Draggable>
+                      )}
+                      {provided.placeholder}
+                    </DropZone>
+                  )}
+                </Droppable>
+              </Diagram>
 
-        {allPlaced && (
-          <button
-            style={{
-              padding: "10px 20px",
-              fontSize: "16px",
-              background: "#4caf50",
-              color: "#fff",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-              calculateScore();
-              navigate("/kinesthetic2");
-            }}
-          >
-            Submit ✅
-          </button>
+              {/* Draggable Words */}
+              <Droppable droppableId="wordList" direction="horizontal">
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      marginTop: "30px",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {initialWords.map((word, index) => (
+                      <Draggable key={word} draggableId={word} index={index}>
+                        {(provided) => (
+                          <Word
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            {word}
+                          </Word>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+
+            {/* ✅ Submit Button appears only when all are placed */}
+            {allPlaced && <SubmitButton onClick={handleSubmit}>Submit</SubmitButton>}
+          </>
+        ) : (
+          <div style={{ textAlign: "center" }}>
+            <h3>✅ Activity Completed!</h3>
+            <p>Great job labeling the diagram correctly.</p>
+            <ProceedButton onClick={handleProceed}>Proceed ➡️</ProceedButton>
+          </div>
         )}
-      </div>
+      </Container>
     </Wrapper>
   );
 };
