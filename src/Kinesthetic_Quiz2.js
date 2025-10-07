@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -77,7 +77,8 @@ const KinestheticPhotosynthesis = () => {
     sugar: null,
   });
 
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+  const INITIAL_TIME = 300; // seconds (5 minutes)
+  const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
 
   // Timer logic
   useEffect(() => {
@@ -119,7 +120,7 @@ const KinestheticPhotosynthesis = () => {
 
   const allPlaced = Object.values(zones).every((z) => z !== null);
 
-  const calculateScore = () => {
+  const calculateScore = useCallback(() => {
     let newScore = 0;
     const correctAnswers = {
       sunlight: "Sunlight",
@@ -134,9 +135,18 @@ const KinestheticPhotosynthesis = () => {
         newScore += 1;
       }
     }
-    setKinestheticScore(newScore);
-    localStorage.setItem("kinestheticQuizScore2", newScore);
-  };
+  setKinestheticScore(newScore);
+    localStorage.setItem("kinestheticQuizScore2", newScore.toString());
+
+    // Save time taken for this quiz (in seconds)
+    try {
+      const timeTaken = Math.max(0, INITIAL_TIME - timeLeft);
+      // match key pattern used elsewhere: `${chosenSection}QuizTime2` => 'kinestheticQuizTime2'
+      localStorage.setItem("kinestheticQuizTime2", timeTaken.toString());
+    } catch (e) {
+      console.warn('Failed to save kinestheticQuizTime2', e);
+    }
+  }, [INITIAL_TIME, timeLeft, setKinestheticScore, zones]);
 
   return (
     <Wrapper>

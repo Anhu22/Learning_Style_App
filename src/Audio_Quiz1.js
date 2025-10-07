@@ -56,9 +56,13 @@ const Quiz = () => {
   const [answers, setAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+  const INITIAL_TIME = 300;
+  const [timeLeft, setTimeLeft] = useState(INITIAL_TIME); // 5 minutes in seconds
+  const [startTime, setStartTime] = useState(null);
 
   useEffect(() => {
+    if (!startTime) setStartTime(Date.now());
+
     if (timeLeft <= 0) {
       if (!submitted) {
         handleSubmit();
@@ -69,7 +73,7 @@ const Quiz = () => {
       setTimeLeft(timeLeft - 1);
     }, 1000);
     return () => clearInterval(timerId);
-  }, [timeLeft, submitted]);
+  }, [timeLeft, submitted, startTime]);
 
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
@@ -100,6 +104,12 @@ const Quiz = () => {
     setSubmitted(true);
 
     localStorage.setItem("audioQuizScore1", calculatedScore);
+    try {
+      const timeTaken = Math.floor((Date.now() - (startTime || Date.now())) / 1000);
+      localStorage.setItem("audioQuizTime1", timeTaken);
+    } catch (e) {
+      localStorage.setItem("audioQuizTime1", (INITIAL_TIME - timeLeft));
+    }
   };
 
   const questions = [

@@ -112,18 +112,25 @@ const bodyStyles = {
 
 // ------------------ Main Component ------------------
 export default function SpaceExplorerGame() {
+  const INITIAL_TIME = 300; // seconds
   const [target, setTarget] = useState(null);
-  const [scores, setScores] = useState([]);
   const [missionCount, setMissionCount] = useState(0);
   const [usedBodies, setUsedBodies] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+  const [timeLeft, setTimeLeft] = useState(INITIAL_TIME); // 5 minutes
   const navigate = useNavigate();
   const TOTAL_MISSIONS = 5;
 
   // Timer
   useEffect(() => {
     if (timeLeft <= 0) {
+      // Quiz timed out — mark as finished and save time taken
       setMissionCount(TOTAL_MISSIONS);
+      try {
+        const timeTaken = Math.max(0, INITIAL_TIME - timeLeft);
+        localStorage.setItem("kinestheticQuizTime1", timeTaken.toString());
+      } catch (e) {
+        console.warn('Failed to save kinestheticQuizTime1 on timeout', e);
+      }
       navigate("/kinesthetic2");
       return;
     }
@@ -171,19 +178,26 @@ export default function SpaceExplorerGame() {
     const missionNumber = missionCount + 1;
     localStorage.setItem(`spaceExplorerScore_M${missionNumber}`, points);
 
-    setScores((prev) => {
-      const updated = [...prev, points];
-      const totalScore = updated.reduce((sum, s) => sum + s, 0);
-      localStorage.setItem("kinesthetictotalscore", totalScore);
-      localStorage.setItem("kinestheticQuizScore1", totalScore);
-      return updated;
-    });
+    // compute new total from existing stored values plus this points
+    let totalScore = 0;
+    for (let i = 1; i <= missionNumber; i++) {
+      totalScore += parseInt(localStorage.getItem(`spaceExplorerScore_M${i}`)) || 0;
+    }
+    localStorage.setItem("kinesthetictotalscore", totalScore.toString());
+    localStorage.setItem("kinestheticQuizScore1", totalScore.toString());
 
     setMissionCount(missionNumber);
 
     if (missionNumber < TOTAL_MISSIONS) {
       nextMission();
     } else {
+      // Quiz finished normally — save time taken and proceed
+      try {
+        const timeTaken = Math.max(0, INITIAL_TIME - timeLeft);
+        localStorage.setItem("kinestheticQuizTime1", timeTaken.toString());
+      } catch (e) {
+        console.warn('Failed to save kinestheticQuizTime1 on completion', e);
+      }
       setTarget(null);
       navigate("/kinesthetic2");
     }

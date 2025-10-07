@@ -99,9 +99,17 @@ const Choose = () => {
   });
 
   const checkSectionCompletion = (section) => {
+    // consider all three quizzes for the section — if any quiz has a score or time, mark section completed
+    const score1 = parseInt(localStorage.getItem(`${section}QuizScore1`) || "0", 10);
+    const score2 = parseInt(localStorage.getItem(`${section}QuizScore2`) || "0", 10);
     const score3 = parseInt(localStorage.getItem(`${section}QuizScore3`) || "0", 10);
+    const time1 = parseInt(localStorage.getItem(`${section}QuizTime1`) || "0", 10);
+    const time2 = parseInt(localStorage.getItem(`${section}QuizTime2`) || "0", 10);
     const time3 = parseInt(localStorage.getItem(`${section}QuizTime3`) || "0", 10);
-    return score3 > 0 || time3 > 0;
+
+    const totalScore = score1 + score2 + score3;
+    const totalTime = time1 + time2 + time3;
+    return totalScore > 0 || totalTime > 0;
   };
 
   useEffect(() => {

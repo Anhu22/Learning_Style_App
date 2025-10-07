@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -88,9 +88,13 @@ const Quiz = () => {
   const [answers, setAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(2700); // 45 minutes in seconds
+  const INITIAL_TIME = 2700;
+  const [timeLeft, setTimeLeft] = useState(INITIAL_TIME); // 45 minutes in seconds
+  const [startTime, setStartTime] = useState(null);
 
   useEffect(() => {
+    if (!startTime) setStartTime(Date.now());
+
     if (timeLeft <= 0) {
       if (!submitted) handleSubmit();
       return;
@@ -99,7 +103,7 @@ const Quiz = () => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
     return () => clearInterval(timerId);
-  }, [timeLeft, submitted]);
+  }, [timeLeft, submitted, startTime]);
 
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
@@ -113,7 +117,7 @@ const Quiz = () => {
     setAnswers(newAnswers);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (submitted) return;
 
     if (answers.length < questions.length || answers.includes(undefined)) {
@@ -131,7 +135,14 @@ const Quiz = () => {
     setScore(calculatedScore);
     setSubmitted(true);
     localStorage.setItem("visualQuizScore1", calculatedScore);
-  };
+    // save time taken
+    try {
+      const timeTaken = Math.floor((Date.now() - (startTime || Date.now())) / 1000);
+      localStorage.setItem("visualQuizTime1", timeTaken);
+    } catch (e) {
+      localStorage.setItem("visualQuizTime1", (INITIAL_TIME - timeLeft));
+    }
+  }, [answers, submitted, startTime, timeLeft]);
 
   return (
     <QuizContainer>

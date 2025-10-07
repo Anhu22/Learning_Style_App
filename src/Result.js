@@ -62,28 +62,38 @@ const Result = () => {
   useEffect(() => {
     const pushResults = async () => {
       try {
-        await axios.post("http://localhost:5000/api/results/save", {
+        const resp = await axios.post("http://localhost:5000/api/results", {
           schoolname,
           rollno,
           password,
           readWriteScore: readScore,
           readWriteTime: readTime,
-          visualScore,
-          visualTime,
-          audioScore,
-          audioTime,
-          kinestheticScore,
-          kinestheticTime,
+          visualScore: visualScore,
+          visualTime: visualTime,
+          audioScore: audioScore,
+          audioTime: audioTime,
+          kinestheticScore: kinestheticScore,
+          kinestheticTime: kinestheticTime,
           predictedStyle,
         });
-        console.log("Results pushed successfully!");
+        if (resp && resp.status === 200) {
+          console.log("Results pushed successfully!");
+          setSaveStatus("✅ Auto-saved results to server");
+        } else {
+          console.warn("Unexpected response saving results:", resp && resp.status);
+          setSaveStatus("❌ Failed to auto-save results");
+        }
       } catch (error) {
         console.error("Failed to save results:", error);
+        setSaveStatus("❌ Failed to auto-save results");
       }
     };
 
     if (schoolname && rollno) {
       pushResults();
+    } else {
+      // if no user, set status to prompt login when user tries to save manually
+      setSaveStatus("⚠️ Login required to save results");
     }
   }, [
     schoolname,
@@ -109,23 +119,28 @@ const Result = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          schoolname,
           rollno,
-          readScore,
-          visualScore,
-          audioScore,
-          kinestheticScore,
+          readWriteScore: readScore,
+          readWriteTime: readTime,
+          visualScore: visualScore,
+          visualTime: visualTime,
+          audioScore: audioScore,
+          audioTime: audioTime,
+          kinestheticScore: kinestheticScore,
+          kinestheticTime: kinestheticTime,
           predictedStyle,
-          readTime,
-          visualTime,
-          audioTime,
-          kinestheticTime,
         }),
       });
 
       if (response.ok) {
         setSaveStatus("✅ Results saved successfully!");
-        // 🧹 Clear localStorage after successful save
-        localStorage.clear();
+        // 🧹 Clear only the final result keys (not entire localStorage) to avoid losing auth
+        try {
+          localStorage.removeItem("finalScore");
+          localStorage.removeItem("finalTime");
+          localStorage.removeItem("lastSection");
+        } catch (e) { /* ignore */ }
       } else {
         setSaveStatus("❌ Failed to save results.");
       }
@@ -148,7 +163,7 @@ const Result = () => {
       {saveStatus && <p>{saveStatus}</p>}
 
       <SubmitButton onClick={handleSaveResults}>Save Results</SubmitButton>
-      <SubmitButton onClick={() => navigate("/")}>Return Home</SubmitButton>
+      <SubmitButton onClick={() => navigate("/home")}>Return Home</SubmitButton>
     </ResultContainer>
   );
 };

@@ -113,7 +113,7 @@ Fractions can be converted into decimals and percentages. For example, 1/2 is eq
   return (
     <Wrapper>
       <Title>
-        <h1> Let's Learn About Solar System</h1>
+        <h1> Let's Learn About Fractions</h1>
       </Title>
 
       <AudioContainer>

@@ -88,12 +88,12 @@ const Quiz = () => {
     const endTime = Date.now();
     const timeTaken = Math.floor((endTime - startTime) / 1000); // in seconds
 
-    setScore(calculatedScore);
-    setSubmitted(true);
+  setScore(calculatedScore);
+  setSubmitted(true);
 
-    // Store score in localStorage for result page
-    localStorage.setItem("readwriteQuizScore3", calculatedScore);
-    {/*localStorage.setItem("readQuizTime3", timeTaken);*/}
+  // Store score in localStorage for result page
+  localStorage.setItem("readwriteQuizScore3", calculatedScore);
+  localStorage.setItem("readwriteQuizTime3", timeTaken);
   };
 
   // ✅ Replaced with L3 real-world application questions
@@ -162,7 +162,7 @@ const Quiz = () => {
       )}
       {submitted && (
         <div>
-          <p>Your score: {score}/5</p>
+          {/*<p>Your score: {score}/5</p>*/}
           <SubmitButton onClick={() => navigate("/section-result")}>
             Get the Result
           </SubmitButton>

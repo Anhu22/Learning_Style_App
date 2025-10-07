@@ -134,10 +134,10 @@ const Quiz = () => {
     const endTime = Date.now();
     const timeTaken = Math.floor((endTime - startTime) / 1000); // in seconds
 
-    setScore(calculatedScore);
-    setSubmitted(true);
-    localStorage.setItem("readwriteQuizScore2", calculatedScore);
-    {/*localStorage.setItem("readwriteQuizTime2", timeTaken);*/}
+  setScore(calculatedScore);
+  setSubmitted(true);
+  localStorage.setItem("readwriteQuizScore2", calculatedScore);
+  localStorage.setItem("readwriteQuizTime2", timeTaken);
   };
 
   return (
@@ -178,7 +178,7 @@ const Quiz = () => {
         </div>
       ) : (
         <div>
-          <p>Your score: {score}/5</p>
+          {/*<p>Your score: {score}/5</p>*/}
           <SubmitButton onClick={() => navigate("/readwrite3")}>
             Proceed to Next
           </SubmitButton>

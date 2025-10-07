@@ -115,7 +115,8 @@ const PizzaFractionGame = () => {
   const [slices, setSlices] = useState([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [quizEnded, setQuizEnded] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+  // const INITIAL_TIME = 300; // seconds (5 minutes)
+  // const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
   const navigate = useNavigate();
 
   const questions = [
@@ -169,11 +170,11 @@ const PizzaFractionGame = () => {
 
 
 
-  const formatTime = (seconds) => {
-    const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${min}:${sec < 10 ? "0" : ""}${sec}`;
-  };
+  // const formatTime = (seconds) => {
+  //   const min = Math.floor(seconds / 60);
+  //   const sec = seconds % 60;
+  //   return `${min}:${sec < 10 ? "0" : ""}${sec}`;
+  // };
 
   const handleAddSlice = (type) => {
     // allow up to 8 slices (questions use denominators like 8 and 12)
@@ -198,7 +199,7 @@ const PizzaFractionGame = () => {
       const isCorrect = Object.entries(currentQuestion.correctSlices).every(
         ([img, count]) => counts[img] === count
       );
-    points = isCorrect ? 2 : 0;
+    points = isCorrect ? 1 : 0;
   }
 
   localStorage.setItem(`pizzaFractionScore_Q${questionIndex + 1}`, points);
@@ -209,26 +210,13 @@ const PizzaFractionGame = () => {
         setQuestionIndex(questionIndex + 1);
         setSlices([]);
       } else {
-        let total = 0;
-        for (let i = 1; i <= questions.length; i++) {
-          total += parseInt(localStorage.getItem(`pizzaFractionScore_Q${i}`)) || 0;
-        }
-        localStorage.setItem("kinesthetictotalscore", total);
-        setQuizEnded(true);
+        // Delegate to handleEndQuiz so final score/time are set consistently
+        handleEndQuiz();
       }
     }, 1000);
   };
 
-  const handleSkip = () => {
-    localStorage.setItem(`pizzaFractionScore_Q${questionIndex + 1}`, 0);
-
-    if (questionIndex < questions.length - 1) {
-      setQuestionIndex(questionIndex + 1);
-      setSlices([]);
-    } else {
-      handleEndQuiz();
-    }
-  };
+  // skip handler removed — not used in UI
 
   const handleEndQuiz = useCallback(() => {
     let total = 0;
@@ -237,22 +225,30 @@ const PizzaFractionGame = () => {
     }
     localStorage.setItem("kinesthetictotalscore", total);
     setKinestheticScore(total);
-    localStorage.setItem("kinestheticQuizScore3", total);
+    localStorage.setItem("kinestheticQuizScore3", total.toString());
+
+    // try {
+    //   const timeTaken = Math.max(0, INITIAL_TIME - timeLeft);
+    //   localStorage.setItem("kinestheticQuizTime3", timeTaken.toString());
+    // } catch (e) {
+    //   console.warn("Failed to save kinestheticQuizTime3", e);
+    // }
+
     setQuizEnded(true);
   }, [questions.length, setKinestheticScore]);
 
   const progressPercent = ((questionIndex + 1) / questions.length) * 100;
 
   // Countdown timer: decrement every second and end quiz when it reaches zero.
-  useEffect(() => {
-    if (quizEnded) return;
-    if (timeLeft <= 0) {
-      handleEndQuiz();
-      return;
-    }
-    const timerId = setInterval(() => setTimeLeft((t) => t - 1), 1000);
-    return () => clearInterval(timerId);
-  }, [timeLeft, quizEnded, handleEndQuiz]);
+  // useEffect(() => {
+  //   if (quizEnded) return;
+  //   if (timeLeft <= 0) {
+  //     handleEndQuiz();
+  //     return;
+  //   }
+  //   const timerId = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+  //   return () => clearInterval(timerId);
+  // }, [timeLeft, quizEnded, handleEndQuiz]);
 
   return (
     <PageBackground>
@@ -292,6 +288,7 @@ const PizzaFractionGame = () => {
                 justifyContent: "center",
               }}
             >
+              {/* <div style={{ fontWeight: 'bold', alignSelf: 'center' }}>⏳ {formatTime(timeLeft)}</div> */}
               {/*<SubmitButton
                 style={{ background: "#f44336" }}
                 onClick={handleSkip}
@@ -305,11 +302,11 @@ const PizzaFractionGame = () => {
         ) : (
           <>
             <Title>🎊 Quiz Completed!</Title>
-            <Instruction>
+            {/*<Instruction>
               {timeLeft <= 0
                 ? "⏰ Time’s up! Your quiz has ended."
                 : "Thanks for playing the Pizza Fraction Game!"}
-            </Instruction>
+            </Instruction>*/}
             <ButtonRow>
               <SubmitButton
                 onClick={() => {

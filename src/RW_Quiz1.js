@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom"; // Replace useHistory with useNavigate
 import styled from "styled-components";
 
@@ -65,57 +65,16 @@ const Quiz = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
-  const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+  const INITIAL_TIME = 300; // 5 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
+  const [startTime, setStartTime] = useState(null);
 
+  // Initialize start time once when the component mounts
   useEffect(() => {
-    if (timeLeft <= 0) {
-      if (!submitted) {
-        handleSubmit();
-      }
-      return;
-    }
-    const timerId = setInterval(() => {
-      setTimeLeft(timeLeft - 1);
-    }, 1000);
-    return () => clearInterval(timerId);
-  }, [timeLeft, submitted]);
+    setStartTime(Date.now());
+  }, []);
 
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const handleChange = (e, index) => {
-    let newAnswers = [...answers];
-    newAnswers[index] = e.target.value;
-    setAnswers(newAnswers);
-  };
-
-  const handleSubmit = () => {
-    if (answers.length < questions.length || answers.includes(undefined)) {
-      alert("Please answer all questions before submitting the quiz.");
-      return;
-    }
-    let calculatedScore = 0;
-
-    // Calculate the score by checking the user's answers
-    questions.forEach((q, index) => {
-      if (answers[index] === q.correctAnswer) {
-        calculatedScore += 1; // Add 1 for correct answer
-      }
-    });
-
-    // Set the calculated score in the state
-    setScore(calculatedScore);
-    setSubmitted(true);
-
-    // After completing the read questionnaire and calculating the score
-    localStorage.setItem("readwriteQuizScore1", calculatedScore);
-  };
-
-  const questions = [
+  const questions = useMemo(() => [
     {
       question: "1. What is the name of our planet?",
       options: ["Earth", "Mars", "Venus", "Saturn"],
@@ -141,7 +100,56 @@ const Quiz = () => {
       options: ["Saturn", "The Moon", "Venus", "Mars"],
       correctAnswer: "The Moon",
     },
-  ];
+  ], []);
+
+  const handleSubmit = useCallback(() => {
+    if (answers.length < questions.length || answers.includes(undefined)) {
+      alert("Please answer all questions before submitting the quiz.");
+      return;
+    }
+    let calculatedScore = 0;
+
+    // Calculate the score by checking the user's answers
+    questions.forEach((q, index) => {
+      if (answers[index] === q.correctAnswer) {
+        calculatedScore += 1; // Add 1 for correct answer
+      }
+    });
+
+  // We persist the score to localStorage; no local score state needed here
+    setSubmitted(true);
+
+    // After completing the read questionnaire and calculating the score
+  localStorage.setItem("readwriteQuizScore1", calculatedScore);
+    // Save the time taken for this quiz (in seconds)
+    try {
+      const timeTaken = Math.floor((Date.now() - (startTime || Date.now())) / 1000);
+      localStorage.setItem("readwriteQuizTime1", timeTaken);
+    } catch (e) {
+      // fallback: derive from timer
+      const fallback = INITIAL_TIME - timeLeft;
+      localStorage.setItem("readwriteQuizTime1", fallback);
+    }
+  }, [answers, questions, startTime, timeLeft]);
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      if (!submitted) {
+        handleSubmit();
+      }
+      return;
+    }
+    const timerId = setInterval(() => {
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [timeLeft, submitted, handleSubmit]);
+
+  const handleChange = (e, index) => {
+    let newAnswers = [...answers];
+    newAnswers[index] = e.target.value;
+    setAnswers(newAnswers);
+  };
 
   return (
     <QuizContainer>
@@ -186,7 +194,7 @@ const Quiz = () => {
       <br></br>
       {submitted && (
         <div>
-          <p>Your score: {score}/5</p>
+          {/*<p>Your score: {score}/5</p>*/}
           <SubmitButton
             onClick={() => {
               navigate("/readwrite2");

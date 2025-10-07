@@ -59,6 +59,12 @@ const Quiz = () => {
   const [answers, setAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const INITIAL_TIME = 300;
+  const [timeLeft, setTimeLeft] = useState(INITIAL_TIME);
+  const [startTime, setStartTime] = useState(null);
+
+  React.useEffect(()=>{ if(!startTime) setStartTime(Date.now()); }, []);
+  React.useEffect(()=>{ if(timeLeft<=0){ if(!submitted) handleSubmit(); return;} const id=setInterval(()=>setTimeLeft(t=>t-1),1000); return ()=>clearInterval(id); }, [timeLeft, submitted]);
 
   const handleChange = (e, index) => {
     let newAnswers = [...answers];
@@ -84,6 +90,8 @@ const Quiz = () => {
 
     // Store score in localStorage for result page
     localStorage.setItem("audioQuizScore3", calculatedScore);
+    try { const timeTaken = Math.floor((Date.now() - (startTime || Date.now()))/1000); localStorage.setItem("audioQuizTime3", timeTaken); }
+    catch(e) { localStorage.setItem("audioQuizTime3", (INITIAL_TIME - timeLeft)); }
   };
 
   // ✅ Replaced with L3 real-world application questions
