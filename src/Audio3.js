@@ -121,7 +121,7 @@ Fractions can be converted into decimals and percentages. For example, 1/2 is eq
       </AudioContainer>
 
       <ButtonContainer>
-        <Link to="/a_quiz1" onClick={pauseAudio}>
+        <Link to="/a_quiz3" onClick={pauseAudio}>
           <Button>Start the Quiz</Button>
         </Link>
       </ButtonContainer>

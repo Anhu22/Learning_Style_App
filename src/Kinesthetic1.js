@@ -457,7 +457,7 @@ const Kinesthetic2Enhanced = () => {
             <p style={{ fontSize: "18px", marginBottom: '10px' }}>
               <strong>Mission {missionCount + 1}:</strong> {target.hint}
             </p>
-            <Button 
+            {/*<Button 
               onClick={handleSkip}
               style={{ 
                 background: '#f44336',
@@ -466,7 +466,7 @@ const Kinesthetic2Enhanced = () => {
               }}
             >
               Skip Mission ⏭️
-            </Button>
+            </Button>*/}
           </div>
         )}
 

@@ -281,7 +281,7 @@ const KinestheticPhotosynthesis = () => {
             }}
             onClick={() => {
               calculateScore();
-              navigate("/kinesthetic3");
+              navigate("/kinesthetic2");
             }}
           >
             Submit ✅

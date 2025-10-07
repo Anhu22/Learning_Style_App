@@ -15,13 +15,13 @@ const Title = styled.div`
   text-align: center;
 `;
 
-const Timer = styled.div`
+/*const Timer = styled.div`
   font-size: 18px;
   font-weight: bold;
   color: #ff6347;
   text-align: center;
   margin-bottom: 15px;
-`;
+`;*/
 
 const QuestionContainer = styled.div`
   margin-bottom: 20px;
@@ -171,14 +171,14 @@ const Quiz = () => {
         ))}
 
         <div style={{ display: 'flex', gap: '20px', marginTop: '15px' }}>
-          {/* Skip button - always visible */}
+          {/* Skip button - always visible
           <SubmitButton 
             style={{ background: '#f44336' }}
             onClick={() => navigate('/readwrite2')}
             disabled={submitted}
           >
             Skip ⏭️
-          </SubmitButton>
+          </SubmitButton>*/}
           
           <SubmitButton onClick={handleSubmit} disabled={submitted || timeLeft <= 0}>Submit</SubmitButton>
         </div>

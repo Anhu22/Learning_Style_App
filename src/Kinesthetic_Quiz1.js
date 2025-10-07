@@ -194,12 +194,12 @@ export default function SpaceExplorerGame() {
       <Title>🌞🪐 Space Explorer Game</Title>
 
       <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
-        <Button
+        {/*<Button
           style={{ background: "#f44336" }}
           onClick={() => navigate("/kinesthetic2")}
         >
           Skip ⏭️
-        </Button>
+        </Button>*/}
 
         {missionCount < TOTAL_MISSIONS ? (
           <Button onClick={nextMission}>

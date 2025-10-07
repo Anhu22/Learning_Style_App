@@ -140,7 +140,7 @@ By understanding how each part works, we can explain why plants are so important
       </AudioContainer>
 
       <ButtonContainer>
-        <Link to="/a_quiz1" onClick={pauseAudio}>
+        <Link to="/a_quiz2" onClick={pauseAudio}>
           <Button>Start the Quiz</Button>
         </Link>
       </ButtonContainer>

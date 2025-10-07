@@ -43,13 +43,14 @@ const Button = styled.button`
   }
 `;
 
-const Home = () => {
+const PartsOfPlantsPage = () => {
   useEffect(() => {
     const chosenSection = localStorage.getItem("chosenSection");
     if (chosenSection) {
       localStorage.setItem(`${chosenSection}StartTime`, Date.now());
     }
   }, []);
+
   return (
     <Wrapper>
       <Title>
@@ -60,7 +61,7 @@ const Home = () => {
         <iframe
           width="560"
           height="315"
-          src="https://www.youtube.com/watch?v=p3St51F4kE8"
+          src="https://www.youtube.com/embed/p3St51F4kE8"
           title="Parts of Plants for Kids"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -77,4 +78,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default PartsOfPlantsPage;
